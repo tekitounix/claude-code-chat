@@ -1,6 +1,6 @@
 # 🚀 Claude Code Chat - Beautiful Claude Code Chat Interface for VS Code
 
-[![VS Code Extension](https://img.shields.io/badge/VS%20Code-Extension-blue?style=for-the-badge&logo=visual-studio-code)](https://marketplace.visualstudio.com/items?itemName=your-extension-id)
+[![VS Code Extension](https://img.shields.io/badge/VS%20Code-Extension-blue?style=for-the-badge&logo=visual-studio-code)](https://marketplace.visualstudio.com/items?itemName=andrepimenta.claude-code-chat)
 [![Claude Code](https://img.shields.io/badge/Powered%20by-Claude%20Code-orange?style=for-the-badge)](https://claude.ai/code)
 [![TypeScript](https://img.shields.io/badge/Built%20with-TypeScript-3178C6?style=for-the-badge&logo=typescript)](https://www.typescriptlang.org/)
 
@@ -198,16 +198,14 @@ Claude Code Chat provides full access to all Claude Code tools:
 - **Session statistics** - Comprehensive usage analytics
 
 ### ⏪ **Checkpoint System**
-- **Git-based backups** - Automatic repository creation for safe experimentation
 - **Instant restoration** - One-click restore to any previous state
-- **Conversation checkpoints** - Every major change creates a restore point
+- **Conversation checkpoints** - Every change creates a restore point
 - **Visual timeline** - See and navigate through all your project states
 
-### 🔄 **Session Persistence**
+### 🔄 **Conversation History**
 - **Automatic saving** - Every conversation is preserved
 - **Smart restoration** - Resume exactly where you left off
-- **Cross-session context** - Reference previous conversations
-- **Export capability** - Save conversations for later reference
+- **Switch between chats** - Easily check and switch to previous conversations
 
 ---
 
@@ -222,17 +220,16 @@ We welcome contributions! Here's how you can help:
 
 ### Development Setup
 ```bash
-git clone https://github.com/your-repo/claude-code-chat
+git clone https://github.com/andrepimenta/claude-code-chat
 cd claude-code-chat
 npm install
-npm run dev
 ```
-
+Click `F5` to run the extension or access the "Run and Debug" section in VSCode
 ---
 
 ## 📝 **License**
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+See the [LICENSE](LICENSE) file for details.
 
 ---
 
@@ -256,6 +253,6 @@ Need help? We've got you covered:
 
 **⭐ Star us on GitHub if this project helped you!**
 
-[**Download Now**](https://marketplace.visualstudio.com/items?itemName=your-extension-id)
+[**Download Now**](https://marketplace.visualstudio.com/items?itemName=andrepimenta.claude-code-chat)
 
 </div>
