@@ -223,8 +223,10 @@ We welcome contributions! Here's how you can help:
 git clone https://github.com/andrepimenta/claude-code-chat
 cd claude-code-chat
 npm install
+
+Click "F5" to run the extension or access the "Run and Debug" section in VSCode
 ```
-Click `F5` to run the extension or access the "Run and Debug" section in VSCode
+
 ---
 
 ## 📝 **License**
@@ -235,7 +237,7 @@ See the [LICENSE](LICENSE) file for details.
 
 ## 🙏 **Acknowledgments**
 
-- **Anthropic** - For creating the amazing Claude AI
+- **Anthropic** - For creating the amazing Claude AI and more specifically the Claude Code SDK
 - **VS Code Team** - For the incredible extension platform
 - **Our Community** - For feedback, suggestions, and contributions
 
