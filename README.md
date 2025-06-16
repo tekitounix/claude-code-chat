@@ -22,6 +22,9 @@ Ditch the command line and experience Claude Code like never before. This extens
 📁 **Smart File Context** - Reference any file with simple @ mentions  
 🛑 **Full Control** - Start, stop, and manage AI processes with ease  
 
+![Claude Code Chat Cut](https://github.com/user-attachments/assets/d4ded28f-a4ed-4862-9766-c1ff89947775)
+
+
 ---
 
 ## 🌟 **Key Features**
