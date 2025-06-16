@@ -2,7 +2,7 @@
   "name": "claude-code-chat",
   "displayName": "Claude Code Chat",
   "description": "Beautiful Claude Code Chat Interface for VS Code",
-  "version": "0.0.2",
+  "version": "0.0.4",
   "publisher": "AndrePimenta",
   "author": "Andre Pimenta",
   "repository": {
@@ -14,7 +14,37 @@
     "vscode": "^1.100.0"
   },
   "categories": [
-    "Other"
+    "Other",
+    "AI",
+    "Chat",
+    "Machine Learning",
+    "Snippets",
+    "Programming Languages",
+    "Education",
+    "Testing",
+    "Formatters",
+    "Linters"
+  ],
+  "keywords": [
+    "claude code",
+    "code explanation",
+    "code generation",
+    "code summary",
+    "code transform",
+    "vibe coding",
+    "prompt language",
+    "copilot",
+    "claude",
+    "ai",
+    "assistant",
+    "chatbot",
+    "chat",
+    "anthropic",
+    "code",
+    "help",
+    "programming",
+    "development",
+    "productivity"
   ],
   "icon": "icon.png",
   "main": "./out/extension.js",
