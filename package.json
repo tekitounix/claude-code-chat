@@ -3,6 +3,12 @@
   "displayName": "claude-code-chat",
   "description": "Beautiful Claude Code Chat Interface for VS Code",
   "version": "0.0.1",
+  "author": "Andre Pimenta",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/andrepimenta/claude-code-chat"
+  },
+  "license": "SEE LICENSE IN LICENSE",
   "engines": {
     "vscode": "^1.100.0"
   },
