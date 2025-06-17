@@ -157,7 +157,7 @@ If you want to revert these changes, just click "Restore Checkpoint" to go back 
 | Shortcut | Action |
 |----------|--------|
 | `Ctrl+Shift+C` | Open Claude Code Chat |
-| `Ctrl+Enter` | Send message |
+| `Enter` | Send message |
 | `@` | Open file picker |
 
 ---
