@@ -128,6 +128,7 @@ class ClaudeChatProvider {
 	}> = [];
 	private _treeProvider: ClaudeChatViewProvider | undefined;
 	private _currentClaudeProcess: cp.ChildProcess | undefined;
+	private _selectedModel: string = 'opus'; // Default model
 
 	constructor(
 		private readonly _extensionUri: vscode.Uri,
@@ -140,6 +141,9 @@ class ClaudeChatProvider {
 
 		// Load conversation index from workspace state
 		this._conversationIndex = this._context.workspaceState.get('claude.conversationIndex', []);
+
+		// Load saved model preference
+		this._selectedModel = this._context.workspaceState.get('claude.selectedModel', 'opus');
 
 		// Resume session from latest conversation
 		const latestConversation = this._getLatestConversation();
@@ -209,6 +213,9 @@ class ClaudeChatProvider {
 					case 'getClipboardText':
 						this._getClipboardText();
 						return;
+					case 'selectModel':
+						this._setSelectedModel(message.model);
+						return;
 				}
 			},
 			null,
@@ -239,6 +246,12 @@ class ClaudeChatProvider {
 			this._panel?.webview.postMessage({
 				type: 'ready',
 				data: 'Ready to chat with Claude Code! Type your message below.'
+			});
+
+			// Send current model to webview
+			this._panel?.webview.postMessage({
+				type: 'modelSelected',
+				model: this._selectedModel
 			});
 		}, 100);
 	}
@@ -282,6 +295,12 @@ class ClaudeChatProvider {
 			'--output-format', 'stream-json', '--verbose',
 			'--dangerously-skip-permissions'
 		];
+
+		// Add model selection if not using default
+		if (this._selectedModel && this._selectedModel !== 'default') {
+			args.push('--model', this._selectedModel);
+			console.log('Using model:', this._selectedModel);
+		}
 
 		// Add session resume if we have a current session
 		if (this._currentSessionId) {
@@ -1158,6 +1177,24 @@ class ClaudeChatProvider {
 			});
 		} catch (error) {
 			console.error('Failed to read clipboard:', error);
+		}
+	}
+
+	private _setSelectedModel(model: string): void {
+		// Validate model name to prevent issues mentioned in the GitHub issue
+		const validModels = ['opus', 'sonnet', 'default'];
+		if (validModels.includes(model)) {
+			this._selectedModel = model;
+			console.log('Model selected:', model);
+			
+			// Store the model preference in workspace state
+			this._context.workspaceState.update('claude.selectedModel', model);
+			
+			// Show confirmation
+			vscode.window.showInformationMessage(`Claude model switched to: ${model.charAt(0).toUpperCase() + model.slice(1)}`);
+		} else {
+			console.error('Invalid model selected:', model);
+			vscode.window.showErrorMessage(`Invalid model: ${model}. Please select Opus, Sonnet, or Default.`);
 		}
 	}
 

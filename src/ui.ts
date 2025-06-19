@@ -484,11 +484,38 @@ const html = `<!DOCTYPE html>
 		.input-controls {
 			display: flex;
 			align-items: center;
-			justify-content: end;
+			justify-content: space-between;
 			gap: 8px;
 			padding: 2px 4px;
 			border-top: 1px solid var(--vscode-panel-border);
 			background-color: var(--vscode-input-background);
+		}
+
+		.left-controls {
+			display: flex;
+			align-items: center;
+			gap: 8px;
+		}
+
+		.model-selector {
+			background-color: rgba(128, 128, 128, 0.15);
+			color: var(--vscode-foreground);
+			border: none;
+			padding: 3px 7px;
+			border-radius: 4px;
+			cursor: pointer;
+			font-size: 11px;
+			font-weight: 500;
+			transition: all 0.2s ease;
+			opacity: 0.9;
+			display: flex;
+			align-items: center;
+			gap: 4px;
+		}
+
+		.model-selector:hover {
+			background-color: rgba(128, 128, 128, 0.25);
+			opacity: 1;
 		}
 
 		.tools-btn {
@@ -1104,42 +1131,52 @@ const html = `<!DOCTYPE html>
 			<div class="textarea-wrapper">
 				<textarea class="input-field" id="messageInput" placeholder="Type your message to Claude Code..." rows="1"></textarea>
 				<div class="input-controls">
-					<button class="tools-btn" onclick="showToolsModal()" title="Configure tools">
-						Tools: All
-						<svg width="8" height="8" viewBox="0 0 8 8" fill="currentColor">
-							<path d="M1 2.5l3 3 3-3"></path>
-						</svg>
-					</button>
+					<div class="left-controls">
+						<button class="model-selector" id="modelSelector" onclick="showModelSelector()" title="Select model">
+							<span id="selectedModel">Opus</span>
+							<svg width="8" height="8" viewBox="0 0 8 8" fill="currentColor">
+								<path d="M1 2.5l3 3 3-3"></path>
+							</svg>
+						</button>
+						<button class="tools-btn" onclick="showToolsModal()" title="Configure tools">
+							Tools: All
+							<svg width="8" height="8" viewBox="0 0 8 8" fill="currentColor">
+								<path d="M1 2.5l3 3 3-3"></path>
+							</svg>
+						</button>
+					</div>
+					<div class="right-controls">
 						<button class="at-btn" onclick="showFilePicker()" title="Reference files">@</button>
 						<button class="image-btn" id="imageBtn" onclick="selectImage()" title="Attach images">
-				<svg
-					xmlns="http://www.w3.org/2000/svg"
-					viewBox="0 0 16 16"
-					width="14"
-					height="16"
-					>
-					<g fill="currentColor">
-						<path d="M6.002 5.5a1.5 1.5 0 1 1-3 0a1.5 1.5 0 0 1 3 0"></path>
-						<path d="M1.5 2A1.5 1.5 0 0 0 0 3.5v9A1.5 1.5 0 0 0 1.5 14h13a1.5 1.5 0 0 0 1.5-1.5v-9A1.5 1.5 0 0 0 14.5 2zm13 1a.5.5 0 0 1 .5.5v6l-3.775-1.947a.5.5 0 0 0-.577.093l-3.71 3.71l-2.66-1.772a.5.5 0 0 0-.63.062L1.002 12v.54L1 12.5v-9a.5.5 0 0 1 .5-.5z"></path>
-					</g>
-					</svg>
-					</button>
-					<button class="send-btn" id="sendBtn" onclick="sendMessage()">
-					<div>
-					<span>Send </span>
-					   <svg
-						xmlns="http://www.w3.org/2000/svg"
-						viewBox="0 0 24 24"
-						width="11"
-						height="11"
-						>
-						<path
-							fill="currentColor"
-							d="M20 4v9a4 4 0 0 1-4 4H6.914l2.5 2.5L8 20.914L3.086 16L8 11.086L9.414 12.5l-2.5 2.5H16a2 2 0 0 0 2-2V4z"
-						></path>
+						<svg
+							xmlns="http://www.w3.org/2000/svg"
+							viewBox="0 0 16 16"
+							width="14"
+							height="16"
+							>
+							<g fill="currentColor">
+								<path d="M6.002 5.5a1.5 1.5 0 1 1-3 0a1.5 1.5 0 0 1 3 0"></path>
+								<path d="M1.5 2A1.5 1.5 0 0 0 0 3.5v9A1.5 1.5 0 0 0 1.5 14h13a1.5 1.5 0 0 0 1.5-1.5v-9A1.5 1.5 0 0 0 14.5 2zm13 1a.5.5 0 0 1 .5.5v6l-3.775-1.947a.5.5 0 0 0-.577.093l-3.71 3.71l-2.66-1.772a.5.5 0 0 0-.63.062L1.002 12v.54L1 12.5v-9a.5.5 0 0 1 .5-.5z"></path>
+							</g>
 						</svg>
-						</div>
-					</button>
+						</button>
+						<button class="send-btn" id="sendBtn" onclick="sendMessage()">
+						<div>
+						<span>Send </span>
+						   <svg
+							xmlns="http://www.w3.org/2000/svg"
+							viewBox="0 0 24 24"
+							width="11"
+							height="11"
+							>
+							<path
+								fill="currentColor"
+								d="M20 4v9a4 4 0 0 1-4 4H6.914l2.5 2.5L8 20.914L3.086 16L8 11.086L9.414 12.5l-2.5 2.5H16a2 2 0 0 0 2-2V4z"
+							></path>
+							</svg>
+							</div>
+						</button>
+					</div>
 				</div>
 			</div>
 		</div>
@@ -1275,6 +1312,45 @@ const html = `<!DOCTYPE html>
 					</p>
 				</div>
 				
+			</div>
+		</div>
+	</div>
+
+	<!-- Model selector modal -->
+	<div id="modelModal" class="tools-modal" style="display: none;">
+		<div class="tools-modal-content" style="width: 400px;">
+			<div class="tools-modal-header">
+				<span>Select Model</span>
+				<button class="tools-close-btn" onclick="hideModelModal()">✕</button>
+			</div>
+			<div class="tools-list">
+				<div class="tool-item" onclick="selectModel('opus')">
+					<input type="radio" name="model" id="model-opus" value="opus" checked>
+					<label for="model-opus" style="cursor: pointer;">
+						<strong>Opus</strong> - Most capable model
+						<div style="font-size: 11px; color: var(--vscode-descriptionForeground); margin-top: 2px;">
+							Best for complex tasks and highest quality output
+						</div>
+					</label>
+				</div>
+				<div class="tool-item" onclick="selectModel('sonnet')">
+					<input type="radio" name="model" id="model-sonnet" value="sonnet">
+					<label for="model-sonnet" style="cursor: pointer;">
+						<strong>Sonnet</strong> - Balanced model
+						<div style="font-size: 11px; color: var(--vscode-descriptionForeground); margin-top: 2px;">
+							Good balance of speed and capability
+						</div>
+					</label>
+				</div>
+				<div class="tool-item" onclick="selectModel('default')">
+					<input type="radio" name="model" id="model-default" value="default">
+					<label for="model-default" style="cursor: pointer;">
+						<strong>Default</strong> - Smart allocation
+						<div style="font-size: 11px; color: var(--vscode-descriptionForeground); margin-top: 2px;">
+							Uses Opus 4 for up to 50% of usage limits, then switches to Sonnet 4
+						</div>
+					</label>
+				</div>
 			</div>
 		</div>
 	</div>
@@ -1787,6 +1863,69 @@ const html = `<!DOCTYPE html>
 			}
 		});
 
+		// Model selector functions
+		let currentModel = 'opus'; // Default model
+
+		function showModelSelector() {
+			document.getElementById('modelModal').style.display = 'flex';
+			// Select the current model radio button
+			const radioButton = document.getElementById('model-' + currentModel);
+			if (radioButton) {
+				radioButton.checked = true;
+			}
+		}
+
+		function hideModelModal() {
+			document.getElementById('modelModal').style.display = 'none';
+		}
+
+		function selectModel(model, fromBackend = false) {
+			currentModel = model;
+			
+			// Update the display text
+			const displayNames = {
+				'opus': 'Opus',
+				'sonnet': 'Sonnet',
+				'default': 'Default'
+			};
+			document.getElementById('selectedModel').textContent = displayNames[model] || model;
+			
+			// Only send model selection to VS Code extension if not from backend
+			if (!fromBackend) {
+				vscode.postMessage({
+					type: 'selectModel',
+					model: model
+				});
+				
+				// Save preference
+				localStorage.setItem('selectedModel', model);
+			}
+			
+			// Update radio button if modal is open
+			const radioButton = document.getElementById('model-' + model);
+			if (radioButton) {
+				radioButton.checked = true;
+			}
+			
+			hideModelModal();
+		}
+
+		// Initialize model display without sending message
+		currentModel = 'opus';
+		const displayNames = {
+			'opus': 'Opus',
+			'sonnet': 'Sonnet',
+			'default': 'Default'
+		};
+		document.getElementById('selectedModel').textContent = displayNames[currentModel];
+
+		// Close model modal when clicking outside
+		document.getElementById('modelModal').addEventListener('click', (e) => {
+			if (e.target === document.getElementById('modelModal')) {
+				hideModelModal();
+			}
+		});
+
 		// Stop button functions
 		function showStopButton() {
 			document.getElementById('stopBtn').style.display = 'flex';
@@ -2050,6 +2189,11 @@ const html = `<!DOCTYPE html>
 					break;
 				case 'clipboardText':
 					handleClipboardText(message.data);
+					break;
+				case 'modelSelected':
+					// Update the UI with the current model
+					currentModel = message.model;
+					selectModel(message.model, true);
 					break;
 			}
 		});

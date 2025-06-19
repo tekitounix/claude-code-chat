@@ -21,6 +21,7 @@ Ditch the command line and experience Claude Code like never before. This extens
 🎨 **VS Code Native** - Seamlessly matches your editor's theme and design  
 📁 **Smart File Context** - Reference any file with simple @ mentions  
 🛑 **Full Control** - Start, stop, and manage AI processes with ease  
+🤖 **Model Selection** - Choose between Opus, Sonnet, or Default based on your needs  
 
 ![Claude Code Chat Cut](https://github.com/user-attachments/assets/d4ded28f-a4ed-4862-9766-c1ff89947775)
 
@@ -60,6 +61,14 @@ Ditch the command line and experience Claude Code like never before. This extens
 - Status bar integration with connection status
 - Activity bar panel for quick access
 - Responsive design for any screen size
+
+### 🤖 **Model Selection**
+- **Opus** - Most capable model for complex tasks requiring deep reasoning
+- **Sonnet** - Balanced model offering great performance for most use cases
+- **Default** - Smart model allocation based on Claude's recommendations
+- Model preference persists across sessions and is saved automatically
+- Easy switching via dropdown selector in the chat interface
+- Visual confirmation when switching between models
 
 ---
 
