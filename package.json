@@ -2,7 +2,7 @@
   "name": "claude-code-chat",
   "displayName": "Claude Code Chat",
   "description": "Beautiful Claude Code Chat Interface for VS Code",
-  "version": "0.0.7",
+  "version": "0.0.8",
   "publisher": "AndrePimenta",
   "author": "Andre Pimenta",
   "repository": {
@@ -47,6 +47,9 @@
   ],
   "icon": "icon.png",
   "main": "./out/extension.js",
+  "activationEvents": [
+    "onStartupFinished"
+  ],
   "contributes": {
     "commands": [
       {
@@ -142,6 +145,31 @@
           "icon": "icon.png"
         }
       ]
+    },
+    "configuration": {
+      "title": "Claude Code Chat",
+      "properties": {
+        "claudeCodeChat.wsl.enabled": {
+          "type": "boolean",
+          "default": false,
+          "description": "Enable WSL integration for running Claude"
+        },
+        "claudeCodeChat.wsl.distro": {
+          "type": "string",
+          "default": "Ubuntu",
+          "description": "WSL distribution name (e.g., Ubuntu, Debian)"
+        },
+        "claudeCodeChat.wsl.nodePath": {
+          "type": "string",
+          "default": "/usr/bin/node",
+          "description": "Path to Node.js in the WSL distribution"
+        },
+        "claudeCodeChat.wsl.claudePath": {
+          "type": "string",
+          "default": "/usr/local/bin/claude",
+          "description": "Path to Claude executable in the WSL distribution"
+        }
+      }
     }
   },
   "scripts": {

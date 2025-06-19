@@ -727,7 +727,7 @@ const html = `<!DOCTYPE html>
 			background-color: var(--vscode-editor-background);
 			border: 1px solid var(--vscode-panel-border);
 			border-radius: 4px;
-			width: 450px;
+			width: 500px;
 			max-height: 600px;
 			display: flex;
 			flex-direction: column;
@@ -795,6 +795,17 @@ const html = `<!DOCTYPE html>
 
 		.tool-item input[type="checkbox"]:disabled + label {
 			opacity: 0.7;
+		}
+
+		.settings-group {
+			margin-bottom: 20px;
+		}
+
+		.settings-group h3 {
+			margin: 0 0 12px 0;
+			font-size: 13px;
+			font-weight: 600;
+			color: var(--vscode-foreground);
 		}
 
 		.status {
@@ -1071,6 +1082,7 @@ const html = `<!DOCTYPE html>
 		</div>
 		<div style="display: flex; gap: 8px; align-items: center;">
 			<div id="sessionStatus" class="session-status" style="display: none;">No session</div>
+			<button class="btn outlined" id="settingsBtn" onclick="toggleSettings()" title="Settings">⚙️</button>
 			<button class="btn outlined" id="historyBtn" onclick="toggleConversationHistory()" style="display: none;">📚 History</button>
 			<button class="btn primary" id="newSessionBtn" onclick="newSession()" style="display: none;">New Chat</button>
 		</div>
@@ -1212,6 +1224,57 @@ const html = `<!DOCTYPE html>
 					<input type="checkbox" id="tool-webfetch" checked disabled>
 					<label for="tool-webfetch">WebFetch - Fetch web content</label>
 				</div>
+			</div>
+		</div>
+	</div>
+
+	<!-- Settings modal -->
+	<div id="settingsModal" class="tools-modal" style="display: none;">
+		<div class="tools-modal-content">
+			<div class="tools-modal-header">
+				<span>Claude Code Chat Settings</span>
+				<button class="tools-close-btn" onclick="hideSettingsModal()">✕</button>
+			</div>
+			<div class="tools-list">
+				<h3 style="margin-top: 0; margin-bottom: 16px; font-size: 14px; font-weight: 600;">WSL Configuration</h3>
+				
+				<div class="settings-group">
+					<div class="tool-item">
+						<input type="checkbox" id="wsl-enabled" onchange="updateSettings()">
+						<label for="wsl-enabled">Enable WSL Integration</label>
+					</div>
+					
+					<div id="wslOptions" style="margin-left: 24px; margin-top: 12px;">
+						<div style="margin-bottom: 12px;">
+							<label style="display: block; margin-bottom: 4px; font-size: 12px; color: var(--vscode-descriptionForeground);">WSL Distribution</label>
+							<input type="text" id="wsl-distro" class="file-search-input" style="width: 100%;" placeholder="Ubuntu" onchange="updateSettings()">
+						</div>
+						
+						<div style="margin-bottom: 12px;">
+							<label style="display: block; margin-bottom: 4px; font-size: 12px; color: var(--vscode-descriptionForeground);">Node.js Path in WSL</label>
+							<input type="text" id="wsl-node-path" class="file-search-input" style="width: 100%;" placeholder="/usr/bin/node" onchange="updateSettings()">
+							<p style="font-size: 11px; color: var(--vscode-descriptionForeground); margin: 4px 0 0 0;">
+								Find your node installation path in WSL by running: <code style="background: var(--vscode-textCodeBlock-background); padding: 2px 4px; border-radius: 3px;">which node</code>
+							</p>
+						</div>
+						
+						<div style="margin-bottom: 12px;">
+							<label style="display: block; margin-bottom: 4px; font-size: 12px; color: var(--vscode-descriptionForeground);">Claude Path in WSL</label>
+							<input type="text" id="wsl-claude-path" class="file-search-input" style="width: 100%;" placeholder="/usr/local/bin/claude" onchange="updateSettings()">
+							<p style="font-size: 11px; color: var(--vscode-descriptionForeground); margin: 4px 0 0 0;">
+								Find your claude installation path in WSL by running: <code style="background: var(--vscode-textCodeBlock-background); padding: 2px 4px; border-radius: 3px;">which claude</code>
+							</p>
+						</div>
+					</div>
+				</div>
+				
+				<div style="margin-top: 20px; padding-top: 16px; border-top: 1px solid var(--vscode-panel-border);">
+					<p style="font-size: 11px; color: var(--vscode-descriptionForeground); margin: 0;">
+						WSL integration allows you to run Claude Code from within Windows Subsystem for Linux.
+						This is useful if you have Claude installed in WSL instead of Windows.
+					</p>
+				</div>
+				
 			</div>
 		</div>
 	</div>
@@ -2281,6 +2344,72 @@ const html = `<!DOCTYPE html>
 				listDiv.appendChild(item);
 			});
 		}
+
+		// Settings functions
+
+		function toggleSettings() {
+			const settingsModal = document.getElementById('settingsModal');
+			if (settingsModal.style.display === 'none') {
+				// Request current settings from VS Code
+				vscode.postMessage({
+					type: 'getSettings'
+				});
+				settingsModal.style.display = 'flex';
+			} else {
+				hideSettingsModal();
+			}
+		}
+
+		function hideSettingsModal() {
+			document.getElementById('settingsModal').style.display = 'none';
+		}
+
+		function updateSettings() {
+			const wslEnabled = document.getElementById('wsl-enabled').checked;
+			const wslDistro = document.getElementById('wsl-distro').value;
+			const wslNodePath = document.getElementById('wsl-node-path').value;
+			const wslClaudePath = document.getElementById('wsl-claude-path').value;
+
+			// Update WSL options visibility
+			document.getElementById('wslOptions').style.display = wslEnabled ? 'block' : 'none';
+
+			// Send settings to VS Code immediately
+			vscode.postMessage({
+				type: 'updateSettings',
+				settings: {
+					'wsl.enabled': wslEnabled,
+					'wsl.distro': wslDistro || 'Ubuntu',
+					'wsl.nodePath': wslNodePath || '/usr/bin/node',
+					'wsl.claudePath': wslClaudePath || '/usr/local/bin/claude'
+				}
+			});
+		}
+
+
+		// Close settings modal when clicking outside
+		document.getElementById('settingsModal').addEventListener('click', (e) => {
+			if (e.target === document.getElementById('settingsModal')) {
+				hideSettingsModal();
+			}
+		});
+
+		// Add settings message handler to window message event
+		const originalMessageHandler = window.onmessage;
+		window.addEventListener('message', event => {
+			const message = event.data;
+			
+			if (message.type === 'settingsData') {
+				// Update UI with current settings
+				document.getElementById('wsl-enabled').checked = message.data['wsl.enabled'] || false;
+				document.getElementById('wsl-distro').value = message.data['wsl.distro'] || 'Ubuntu';
+				document.getElementById('wsl-node-path').value = message.data['wsl.nodePath'] || '/usr/bin/node';
+				document.getElementById('wsl-claude-path').value = message.data['wsl.claudePath'] || '/usr/local/bin/claude';
+				
+				// Show/hide WSL options
+				document.getElementById('wslOptions').style.display = message.data['wsl.enabled'] ? 'block' : 'none';
+			}
+		});
+
 	</script>
 </body>
 </html>`;

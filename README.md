@@ -160,6 +160,27 @@ If you want to revert these changes, just click "Restore Checkpoint" to go back 
 | `Enter` | Send message |
 | `@` | Open file picker |
 
+### WSL Configuration (Windows Users)
+If you're using Claude Code through WSL (Windows Subsystem for Linux), you can configure the extension to use WSL:
+
+1. Open VS Code Settings (`Ctrl+,` or `Cmd+,`)
+2. Search for "Claude Code Chat"
+3. Configure these settings:
+   - **Claude Code Chat: WSL Enabled** - Enable WSL integration
+   - **Claude Code Chat: WSL Distro** - Your WSL distribution name (e.g., `Ubuntu`, `Debian`)
+   - **Claude Code Chat: WSL Node Path** - Path to Node.js in WSL (default: `/usr/bin/node`)
+   - **Claude Code Chat: WSL Claude Path** - Path to Claude in WSL (default: `/usr/local/bin/claude`)
+
+Example configuration in `settings.json`:
+```json
+{
+  "claudeCodeChat.wsl.enabled": true,
+  "claudeCodeChat.wsl.distro": "Ubuntu",
+  "claudeCodeChat.wsl.nodePath": "/usr/bin/node",
+  "claudeCodeChat.wsl.claudePath": "/usr/local/bin/claude"
+}
+```
+
 ---
 
 ## 🎯 **Pro Tips & Tricks**
