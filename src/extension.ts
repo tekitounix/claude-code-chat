@@ -206,6 +206,9 @@ class ClaudeChatProvider {
 					case 'updateSettings':
 						this._updateSettings(message.settings);
 						return;
+					case 'getClipboardText':
+						this._getClipboardText();
+						return;
 				}
 			},
 			null,
@@ -1143,6 +1146,18 @@ class ClaudeChatProvider {
 		} catch (error) {
 			console.error('Failed to update settings:', error);
 			vscode.window.showErrorMessage('Failed to update settings');
+		}
+	}
+
+	private async _getClipboardText(): Promise<void> {
+		try {
+			const text = await vscode.env.clipboard.readText();
+			this._panel?.webview.postMessage({
+				type: 'clipboardText',
+				data: text
+			});
+		} catch (error) {
+			console.error('Failed to read clipboard:', error);
 		}
 	}
 

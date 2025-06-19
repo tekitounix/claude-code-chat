@@ -1665,7 +1665,77 @@ const html = `<!DOCTYPE html>
 			} else if (e.key === 'Escape' && filePickerModal.style.display === 'flex') {
 				e.preventDefault();
 				hideFilePicker();
+			} else if (e.key === 'v' && (e.ctrlKey || e.metaKey)) {
+				// Handle Ctrl+V/Cmd+V explicitly in case paste event doesn't fire
+				// Don't prevent default - let browser handle it first
+				setTimeout(() => {
+					// If value hasn't changed, manually trigger paste
+					const currentValue = messageInput.value;
+					setTimeout(() => {
+						if (messageInput.value === currentValue) {
+							// Value didn't change, request clipboard from VS Code
+							vscode.postMessage({
+								type: 'getClipboardText'
+							});
+						}
+					}, 50);
+				}, 0);
 			}
+		});
+
+		// Add explicit paste event handler for better clipboard support in VSCode webviews
+		messageInput.addEventListener('paste', async (e) => {
+			e.preventDefault();
+			
+			try {
+				// Try to get clipboard data from the event first
+				const clipboardData = e.clipboardData;
+				let text = '';
+				
+				if (clipboardData) {
+					text = clipboardData.getData('text/plain');
+				}
+				
+				// If no text from event, try navigator.clipboard API
+				if (!text && navigator.clipboard && navigator.clipboard.readText) {
+					try {
+						text = await navigator.clipboard.readText();
+					} catch (err) {
+						console.log('Clipboard API failed:', err);
+					}
+				}
+				
+				// If still no text, request from VS Code extension
+				if (!text) {
+					vscode.postMessage({
+						type: 'getClipboardText'
+					});
+					return;
+				}
+				
+				// Insert text at cursor position
+				const start = messageInput.selectionStart;
+				const end = messageInput.selectionEnd;
+				const currentValue = messageInput.value;
+				
+				const newValue = currentValue.substring(0, start) + text + currentValue.substring(end);
+				messageInput.value = newValue;
+				
+				// Set cursor position after pasted text
+				const newCursorPos = start + text.length;
+				messageInput.setSelectionRange(newCursorPos, newCursorPos);
+				
+				// Trigger input event to adjust height
+				messageInput.dispatchEvent(new Event('input', { bubbles: true }));
+			} catch (error) {
+				console.error('Paste error:', error);
+			}
+		});
+
+		// Handle context menu paste
+		messageInput.addEventListener('contextmenu', (e) => {
+			// Don't prevent default - allow context menu to show
+			// but ensure paste will work when selected
 		});
 
 		// Initialize textarea height
@@ -1977,6 +2047,9 @@ const html = `<!DOCTYPE html>
 					
 				case 'conversationList':
 					displayConversationList(message.data);
+					break;
+				case 'clipboardText':
+					handleClipboardText(message.data);
 					break;
 			}
 		});
@@ -2343,6 +2416,25 @@ const html = `<!DOCTYPE html>
 
 				listDiv.appendChild(item);
 			});
+		}
+
+		function handleClipboardText(text) {
+			if (!text) return;
+			
+			// Insert text at cursor position
+			const start = messageInput.selectionStart;
+			const end = messageInput.selectionEnd;
+			const currentValue = messageInput.value;
+			
+			const newValue = currentValue.substring(0, start) + text + currentValue.substring(end);
+			messageInput.value = newValue;
+			
+			// Set cursor position after pasted text
+			const newCursorPos = start + text.length;
+			messageInput.setSelectionRange(newCursorPos, newCursorPos);
+			
+			// Trigger input event to adjust height
+			messageInput.dispatchEvent(new Event('input', { bubbles: true }));
 		}
 
 		// Settings functions
