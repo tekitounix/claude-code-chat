@@ -128,7 +128,7 @@ class ClaudeChatProvider {
 	}> = [];
 	private _treeProvider: ClaudeChatViewProvider | undefined;
 	private _currentClaudeProcess: cp.ChildProcess | undefined;
-	private _selectedModel: string = 'opus'; // Default model
+	private _selectedModel: string = 'default'; // Default model
 
 	constructor(
 		private readonly _extensionUri: vscode.Uri,
@@ -143,7 +143,7 @@ class ClaudeChatProvider {
 		this._conversationIndex = this._context.workspaceState.get('claude.conversationIndex', []);
 
 		// Load saved model preference
-		this._selectedModel = this._context.workspaceState.get('claude.selectedModel', 'opus');
+		this._selectedModel = this._context.workspaceState.get('claude.selectedModel', 'default');
 
 		// Resume session from latest conversation
 		const latestConversation = this._getLatestConversation();
@@ -215,6 +215,9 @@ class ClaudeChatProvider {
 						return;
 					case 'selectModel':
 						this._setSelectedModel(message.model);
+						return;
+					case 'openModelTerminal':
+						this._openModelTerminal();
 						return;
 				}
 			},
@@ -1196,6 +1199,34 @@ class ClaudeChatProvider {
 			console.error('Invalid model selected:', model);
 			vscode.window.showErrorMessage(`Invalid model: ${model}. Please select Opus, Sonnet, or Default.`);
 		}
+	}
+
+	private _openModelTerminal(): void {
+		const config = vscode.workspace.getConfiguration('claude');
+		const wslEnabled = config.get<boolean>('wsl.enabled', false);
+		const wslDistro = config.get<string>('wsl.distro', 'Ubuntu');
+		const claudePath = config.get<string>('wsl.claudePath', '/usr/local/bin/claude');
+
+		// Create terminal with the claude /model command
+		const terminal = vscode.window.createTerminal('Claude Model Selection');
+		if (wslEnabled) {
+			terminal.sendText(`wsl -d ${wslDistro} ${claudePath} /model`);
+		} else {
+			terminal.sendText('claude /model');
+		}
+		terminal.show();
+
+		// Show info message
+		vscode.window.showInformationMessage(
+			'Check the terminal to update your default model configuration. Come back to this chat here after making changes.',
+			'OK'
+		);
+
+		// Send message to UI about terminal
+		this._panel?.webview.postMessage({
+			type: 'terminalOpened',
+			data: 'Check the terminal to update your default model configuration. Come back to this chat here after making changes.'
+		});
 	}
 
 	public dispose() {
