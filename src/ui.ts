@@ -321,6 +321,9 @@ const html = `<!DOCTYPE html>
 				<span>Claude Code Commands</span>
 				<button class="tools-close-btn" onclick="hideSlashCommandsModal()">✕</button>
 			</div>
+			<div class="slash-commands-info">
+				<p>These commands require the Claude CLI and will open in VS Code terminal. Return here after completion.</p>
+			</div>
 			<div class="slash-commands-list">
 				<div class="slash-command-item" onclick="executeSlashCommand('bug')">
 					<div class="slash-command-icon">🐛</div>

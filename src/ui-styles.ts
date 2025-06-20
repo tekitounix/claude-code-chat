@@ -1052,6 +1052,22 @@ const styles = `
     }
 
     /* Slash commands modal */
+    .slash-commands-info {
+        padding: 12px 16px;
+        background-color: rgba(255, 149, 0, 0.1);
+        border: 1px solid rgba(255, 149, 0, 0.2);
+        border-radius: 4px;
+        margin-bottom: 16px;
+    }
+
+    .slash-commands-info p {
+        margin: 0;
+        font-size: 11px;
+        color: var(--vscode-descriptionForeground);
+        text-align: center;
+        opacity: 0.9;
+    }
+
     .slash-commands-list {
         display: grid;
         gap: 8px;

@@ -1242,12 +1242,20 @@ class ClaudeChatProvider {
 		const wslDistro = config.get<string>('wsl.distro', 'Ubuntu');
 		const claudePath = config.get<string>('wsl.claudePath', '/usr/local/bin/claude');
 
+		// Build command arguments
+		const args = ['/model'];
+		
+		// Add session resume if we have a current session
+		if (this._currentSessionId) {
+			args.push('--resume', this._currentSessionId);
+		}
+
 		// Create terminal with the claude /model command
 		const terminal = vscode.window.createTerminal('Claude Model Selection');
 		if (wslEnabled) {
-			terminal.sendText(`wsl -d ${wslDistro} ${claudePath} /model`);
+			terminal.sendText(`wsl -d ${wslDistro} ${claudePath} ${args.join(' ')}`);
 		} else {
-			terminal.sendText('claude /model');
+			terminal.sendText(`claude ${args.join(' ')}`);
 		}
 		terminal.show();
 
@@ -1292,6 +1300,12 @@ class ClaudeChatProvider {
 			`Executing /${command} command in terminal. Check the terminal output and return when ready.`,
 			'OK'
 		);
+
+		// Send message to UI about terminal
+		this._panel?.webview.postMessage({
+			type: 'terminalOpened',
+			data: `Executing /${command} command in terminal. Check the terminal output and return when ready.`,
+		});
 	}
 
 	public dispose() {
