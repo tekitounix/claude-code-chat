@@ -1516,9 +1516,9 @@ const html = `<!DOCTYPE html>
 				// Bold
 				line = line.replace(/\\*\\*(.*?)\\*\\*/g, '<strong>$1</strong>');
 
-				// Italic
+				// Italic - only apply when underscores are surrounded by whitespace or at beginning/end
 				line = line.replace(/(?<!\\*)\\*(?!\\*)(.*?)\\*(?!\\*)/g, '<em>$1</em>');
-				line = line.replace(/_(.*?)_/g, '<em>$1</em>');
+				line = line.replace(/(^|\\s)_([^_\\s][^_]*[^_\\s]|[^_\\s])_(?=\\s|$)/g, '$1<em>$2</em>');
 
 				// Headers
 				if (/^####\\s+/.test(line)) {

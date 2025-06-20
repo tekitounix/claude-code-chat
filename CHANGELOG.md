@@ -4,6 +4,14 @@ All notable changes to the "claude-code-chat" extension will be documented in th
 
 Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
 
+## [0.1.2] - 2025-06-20
+
+### 🐛 Bug Fixes
+- Fixed markdown parsing bug where underscores in code identifiers (like "protein_id") were incorrectly converted to italic formatting
+- Updated regex pattern to only apply italic formatting when underscores are surrounded by whitespace or at string boundaries
+- Preserved proper formatting for code snippets and technical identifiers
+- Always show New Chat button
+
 ## [0.1.0] - 2025-06-20
 
 ### 🚀 Major Features Added
