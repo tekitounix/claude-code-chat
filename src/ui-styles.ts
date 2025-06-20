@@ -1051,6 +1051,7 @@ const styles = `
         color: var(--vscode-foreground);
     }
 
+
     /* Slash commands modal */
     .slash-commands-info {
         padding: 12px 16px;
@@ -1112,6 +1113,46 @@ const styles = `
         font-size: 11px;
         color: var(--vscode-descriptionForeground);
         opacity: 0.8;
+    }
+
+    /* Custom command input */
+    .custom-command-item {
+        cursor: default;
+    }
+
+    .custom-command-input-container {
+        display: flex;
+        align-items: center;
+        gap: 2px;
+        margin-top: 4px;
+    }
+
+    .command-prefix {
+        font-size: 12px;
+        color: var(--vscode-foreground);
+        font-weight: 500;
+    }
+
+    .custom-command-input {
+        background-color: var(--vscode-input-background);
+        border: 1px solid var(--vscode-input-border);
+        color: var(--vscode-input-foreground);
+        padding: 2px 6px;
+        border-radius: 3px;
+        font-size: 11px;
+        outline: none;
+        min-width: 120px;
+        font-family: var(--vscode-editor-font-family);
+    }
+
+    .custom-command-input:focus {
+        border-color: var(--vscode-focusBorder);
+        box-shadow: 0 0 0 1px var(--vscode-focusBorder);
+    }
+
+    .custom-command-input::placeholder {
+        color: var(--vscode-input-placeholderForeground);
+        opacity: 0.7;
     }
 
     .status {

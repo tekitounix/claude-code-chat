@@ -250,7 +250,7 @@ const html = `<!DOCTYPE html>
 					</div>
 				</div>
 
-				<h3 style="margin-top: 24px; margin-bottom: 16px; font-size: 14px; font-weight: 600;">MCP Configuration</h3>
+				<h3 style="margin-top: 24px; margin-bottom: 16px; font-size: 14px; font-weight: 600;">MCP Configuration (coming soon)</h3>
 				<div>
 					<p style="font-size: 11px; color: var(--vscode-descriptionForeground); margin: 0;">
 						Model Context Protocol (MCP) allows Claude Code to connect to external systems and services for enhanced capabilities like databases, APIs, and tools.
@@ -260,6 +260,19 @@ const html = `<!DOCTYPE html>
 					<div class="tool-item">
 						<input type="checkbox" id="mcp-enabled" disabled>
 						<label for="mcp-enabled">Enable MCP Integration <span style="font-style: italic; opacity: 0.7;">(Coming Soon)</span></label>
+					</div>
+				</div>
+
+				<h3 style="margin-top: 24px; margin-bottom: 16px; font-size: 14px; font-weight: 600;">Custom Slash Commands (coming soon)</h3>
+				<div>
+					<p style="font-size: 11px; color: var(--vscode-descriptionForeground); margin: 0;">
+						Add your own custom slash commands that will appear in the commands modal. Define shortcuts for frequently used terminal commands.
+					</p>
+				</div>
+				<div class="settings-group">
+					<div class="tool-item">
+						<input type="checkbox" id="custom-commands-enabled" disabled>
+						<label for="custom-commands-enabled">Enable Custom Commands <span style="font-style: italic; opacity: 0.7;">(Coming Soon)</span></label>
 					</div>
 				</div>
 				
@@ -456,6 +469,23 @@ const html = `<!DOCTYPE html>
 					<div class="slash-command-content">
 						<div class="slash-command-title">/vim</div>
 						<div class="slash-command-description">Enter vim mode for alternating insert and command modes</div>
+					</div>
+				</div>
+				<div class="slash-command-item custom-command-item">
+					<div class="slash-command-icon">⚡</div>
+					<div class="slash-command-content">
+						<div class="slash-command-title">Custom Command</div>
+						<div class="slash-command-description">
+							<div class="custom-command-input-container">
+								<span class="command-prefix">/</span>
+								<input type="text" 
+									   class="custom-command-input" 
+									   id="customCommandInput"
+									   placeholder="enter-command" 
+									   onkeydown="handleCustomCommandKeydown(event)"
+									   onclick="event.stopPropagation()">
+							</div>
+						</div>
 					</div>
 				</div>
 			</div>
@@ -1034,6 +1064,18 @@ const html = `<!DOCTYPE html>
 			
 			// Show user feedback
 			addMessage('user', \`Executing /\${command} command in terminal. Check the terminal output and return when ready.\`, 'assistant');
+		}
+
+		function handleCustomCommandKeydown(event) {
+			if (event.key === 'Enter') {
+				event.preventDefault();
+				const customCommand = event.target.value.trim();
+				if (customCommand) {
+					executeSlashCommand(customCommand);
+					// Clear the input for next use
+					event.target.value = '';
+				}
+			}
 		}
 
 		function openModelTerminal() {
