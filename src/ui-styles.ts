@@ -434,9 +434,66 @@ const styles = `
         border-top: 1px solid var(--vscode-panel-border);
         background-color: var(--vscode-panel-background);
         display: flex;
+        flex-direction: column;
+        position: relative;
+    }
+
+    .input-modes {
+        display: flex;
+        gap: 16px;
+        align-items: center;
+        padding-bottom: 5px;
+        font-size: 9.5px;
+    }
+
+    .mode-toggle {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        color: var(--vscode-foreground);
+        opacity: 0.8;
+        transition: opacity 0.2s ease;
+    }
+
+    .mode-toggle:hover {
+        opacity: 1;
+    }
+
+    .mode-switch {
+        position: relative;
+        width: 28px;
+        height: 16px;
+        background-color: var(--vscode-panel-border);
+        border-radius: 8px;
+        cursor: pointer;
+        transition: background-color 0.2s ease;
+    }
+
+    .mode-switch.active {
+        background-color: var(--vscode-button-background);
+    }
+
+    .mode-switch::after {
+        content: '';
+        position: absolute;
+        top: 2px;
+        left: 2px;
+        width: 12px;
+        height: 12px;
+        background-color: var(--vscode-foreground);
+        border-radius: 50%;
+        transition: transform 0.2s ease;
+    }
+
+    .mode-switch.active::after {
+        transform: translateX(12px);
+        background-color: var(--vscode-button-foreground);
+    }
+
+    .textarea-container {
+        display: flex;
         gap: 10px;
         align-items: flex-end;
-        position: relative;
     }
 
     .textarea-wrapper {

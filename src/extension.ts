@@ -181,7 +181,7 @@ class ClaudeChatProvider {
 			message => {
 				switch (message.type) {
 					case 'sendMessage':
-						this._sendMessageToClaude(message.text);
+						this._sendMessageToClaude(message.text, message.planMode, message.thinkingMode);
 						return;
 					case 'newSession':
 						this._newSession();
@@ -259,11 +259,20 @@ class ClaudeChatProvider {
 		}, 100);
 	}
 
-	private async _sendMessageToClaude(message: string) {
+	private async _sendMessageToClaude(message: string, planMode?: boolean, thinkingMode?: boolean) {
 		const workspaceFolder = vscode.workspace.workspaceFolders?.[0];
 		const cwd = workspaceFolder ? workspaceFolder.uri.fsPath : process.cwd();
 
-		// Show user input in chat and save to conversation
+		// Prepend mode instructions if enabled
+		let actualMessage = message;
+		if (planMode && !message.toLowerCase().includes('plan first')) {
+			actualMessage = 'PLAN FIRST BEFORE MAKING ANY CHANGES, SHOW ME IN DETAIL WHAT YOU WILL CHANGE. DONT PROCEED BEFORE I ACCEPT IN A DIFFERENT MESSAGE: \n' + message;
+		}
+		if (thinkingMode && !actualMessage.toLowerCase().includes('think through')) {
+			actualMessage = 'THINK THROUGH THIS STEP BY STEP: \n' + actualMessage;
+		}
+
+		// Show original user input in chat and save to conversation (without mode prefixes)
 		this._sendAndSaveMessage({
 			type: 'userInput',
 			data: message
@@ -353,9 +362,9 @@ class ClaudeChatProvider {
 		// Store process reference for potential termination
 		this._currentClaudeProcess = claudeProcess;
 
-		// Send the message to Claude's stdin
+		// Send the message to Claude's stdin (with mode prefixes if enabled)
 		if (claudeProcess.stdin) {
-			claudeProcess.stdin.write(message + '\n');
+			claudeProcess.stdin.write(actualMessage + '\n');
 			claudeProcess.stdin.end();
 		}
 
