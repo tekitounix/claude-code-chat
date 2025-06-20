@@ -455,16 +455,25 @@ const styles = `
         transition: opacity 0.2s ease;
     }
 
+    .mode-toggle span {
+        cursor: pointer;
+        transition: opacity 0.2s ease;
+    }
+
+    .mode-toggle span:hover {
+        opacity: 1;
+    }
+
     .mode-toggle:hover {
         opacity: 1;
     }
 
     .mode-switch {
         position: relative;
-        width: 28px;
-        height: 16px;
+        width: 26px;
+        height: 14px;
         background-color: var(--vscode-panel-border);
-        border-radius: 8px;
+        border-radius: 7px;
         cursor: pointer;
         transition: background-color 0.2s ease;
     }
@@ -478,15 +487,15 @@ const styles = `
         position: absolute;
         top: 2px;
         left: 2px;
-        width: 12px;
-        height: 12px;
+        width: 10px;
+        height: 10px;
         background-color: var(--vscode-foreground);
         border-radius: 50%;
         transition: transform 0.2s ease;
     }
 
     .mode-switch.active::after {
-        transform: translateX(12px);
+        transform: translateX(10px);
         background-color: var(--vscode-button-foreground);
     }
 
