@@ -219,6 +219,9 @@ class ClaudeChatProvider {
 					case 'openModelTerminal':
 						this._openModelTerminal();
 						return;
+					case 'executeSlashCommand':
+						this._executeSlashCommand(message.command);
+						return;
 				}
 			},
 			null,
@@ -1259,6 +1262,36 @@ class ClaudeChatProvider {
 			type: 'terminalOpened',
 			data: 'Check the terminal to update your default model configuration. Come back to this chat here after making changes.'
 		});
+	}
+
+	private _executeSlashCommand(command: string): void {
+		const config = vscode.workspace.getConfiguration('claudeCodeChat');
+		const wslEnabled = config.get<boolean>('wsl.enabled', false);
+		const wslDistro = config.get<string>('wsl.distro', 'Ubuntu');
+		const claudePath = config.get<string>('wsl.claudePath', '/usr/local/bin/claude');
+
+		// Build command arguments
+		const args = [`/${command}`];
+		
+		// Add session resume if we have a current session
+		if (this._currentSessionId) {
+			args.push('--resume', this._currentSessionId);
+		}
+
+		// Create terminal with the claude command
+		const terminal = vscode.window.createTerminal(`Claude /${command}`);
+		if (wslEnabled) {
+			terminal.sendText(`wsl -d ${wslDistro} ${claudePath} ${args.join(' ')}`);
+		} else {
+			terminal.sendText(`claude ${args.join(' ')}`);
+		}
+		terminal.show();
+
+		// Show info message
+		vscode.window.showInformationMessage(
+			`Executing /${command} command in terminal. Check the terminal output and return when ready.`,
+			'OK'
+		);
 	}
 
 	public dispose() {

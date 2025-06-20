@@ -314,6 +314,151 @@ const html = `<!DOCTYPE html>
 		</div>
 	</div>
 
+	<!-- Slash commands modal -->
+	<div id="slashCommandsModal" class="tools-modal" style="display: none;">
+		<div class="tools-modal-content">
+			<div class="tools-modal-header">
+				<span>Claude Code Commands</span>
+				<button class="tools-close-btn" onclick="hideSlashCommandsModal()">✕</button>
+			</div>
+			<div class="slash-commands-list">
+				<div class="slash-command-item" onclick="executeSlashCommand('bug')">
+					<div class="slash-command-icon">🐛</div>
+					<div class="slash-command-content">
+						<div class="slash-command-title">/bug</div>
+						<div class="slash-command-description">Report bugs (sends conversation to Anthropic)</div>
+					</div>
+				</div>
+				<div class="slash-command-item" onclick="executeSlashCommand('clear')">
+					<div class="slash-command-icon">🗑️</div>
+					<div class="slash-command-content">
+						<div class="slash-command-title">/clear</div>
+						<div class="slash-command-description">Clear conversation history</div>
+					</div>
+				</div>
+				<div class="slash-command-item" onclick="executeSlashCommand('compact')">
+					<div class="slash-command-icon">📦</div>
+					<div class="slash-command-content">
+						<div class="slash-command-title">/compact</div>
+						<div class="slash-command-description">Compact conversation with optional focus instructions</div>
+					</div>
+				</div>
+				<div class="slash-command-item" onclick="executeSlashCommand('config')">
+					<div class="slash-command-icon">⚙️</div>
+					<div class="slash-command-content">
+						<div class="slash-command-title">/config</div>
+						<div class="slash-command-description">View/modify configuration</div>
+					</div>
+				</div>
+				<div class="slash-command-item" onclick="executeSlashCommand('cost')">
+					<div class="slash-command-icon">💰</div>
+					<div class="slash-command-content">
+						<div class="slash-command-title">/cost</div>
+						<div class="slash-command-description">Show token usage statistics</div>
+					</div>
+				</div>
+				<div class="slash-command-item" onclick="executeSlashCommand('doctor')">
+					<div class="slash-command-icon">🩺</div>
+					<div class="slash-command-content">
+						<div class="slash-command-title">/doctor</div>
+						<div class="slash-command-description">Checks the health of your Claude Code installation</div>
+					</div>
+				</div>
+				<div class="slash-command-item" onclick="executeSlashCommand('help')">
+					<div class="slash-command-icon">❓</div>
+					<div class="slash-command-content">
+						<div class="slash-command-title">/help</div>
+						<div class="slash-command-description">Get usage help</div>
+					</div>
+				</div>
+				<div class="slash-command-item" onclick="executeSlashCommand('init')">
+					<div class="slash-command-icon">🚀</div>
+					<div class="slash-command-content">
+						<div class="slash-command-title">/init</div>
+						<div class="slash-command-description">Initialize project with CLAUDE.md guide</div>
+					</div>
+				</div>
+				<div class="slash-command-item" onclick="executeSlashCommand('login')">
+					<div class="slash-command-icon">🔑</div>
+					<div class="slash-command-content">
+						<div class="slash-command-title">/login</div>
+						<div class="slash-command-description">Switch Anthropic accounts</div>
+					</div>
+				</div>
+				<div class="slash-command-item" onclick="executeSlashCommand('logout')">
+					<div class="slash-command-icon">🚪</div>
+					<div class="slash-command-content">
+						<div class="slash-command-title">/logout</div>
+						<div class="slash-command-description">Sign out from your Anthropic account</div>
+					</div>
+				</div>
+				<div class="slash-command-item" onclick="executeSlashCommand('mcp')">
+					<div class="slash-command-icon">🔌</div>
+					<div class="slash-command-content">
+						<div class="slash-command-title">/mcp</div>
+						<div class="slash-command-description">Manage MCP server connections and OAuth authentication</div>
+					</div>
+				</div>
+				<div class="slash-command-item" onclick="executeSlashCommand('memory')">
+					<div class="slash-command-icon">🧠</div>
+					<div class="slash-command-content">
+						<div class="slash-command-title">/memory</div>
+						<div class="slash-command-description">Edit CLAUDE.md memory files</div>
+					</div>
+				</div>
+				<div class="slash-command-item" onclick="executeSlashCommand('model')">
+					<div class="slash-command-icon">🤖</div>
+					<div class="slash-command-content">
+						<div class="slash-command-title">/model</div>
+						<div class="slash-command-description">Select or change the AI model</div>
+					</div>
+				</div>
+				<div class="slash-command-item" onclick="executeSlashCommand('permissions')">
+					<div class="slash-command-icon">🔒</div>
+					<div class="slash-command-content">
+						<div class="slash-command-title">/permissions</div>
+						<div class="slash-command-description">View or update permissions</div>
+					</div>
+				</div>
+				<div class="slash-command-item" onclick="executeSlashCommand('pr_comments')">
+					<div class="slash-command-icon">💬</div>
+					<div class="slash-command-content">
+						<div class="slash-command-title">/pr_comments</div>
+						<div class="slash-command-description">View pull request comments</div>
+					</div>
+				</div>
+				<div class="slash-command-item" onclick="executeSlashCommand('review')">
+					<div class="slash-command-icon">👀</div>
+					<div class="slash-command-content">
+						<div class="slash-command-title">/review</div>
+						<div class="slash-command-description">Request code review</div>
+					</div>
+				</div>
+				<div class="slash-command-item" onclick="executeSlashCommand('status')">
+					<div class="slash-command-icon">📊</div>
+					<div class="slash-command-content">
+						<div class="slash-command-title">/status</div>
+						<div class="slash-command-description">View account and system statuses</div>
+					</div>
+				</div>
+				<div class="slash-command-item" onclick="executeSlashCommand('terminal-setup')">
+					<div class="slash-command-icon">⌨️</div>
+					<div class="slash-command-content">
+						<div class="slash-command-title">/terminal-setup</div>
+						<div class="slash-command-description">Install Shift+Enter key binding for newlines</div>
+					</div>
+				</div>
+				<div class="slash-command-item" onclick="executeSlashCommand('vim')">
+					<div class="slash-command-icon">📝</div>
+					<div class="slash-command-content">
+						<div class="slash-command-title">/vim</div>
+						<div class="slash-command-description">Enter vim mode for alternating insert and command modes</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
 	<script>
 		const vscode = acquireVsCodeApi();
 		const messagesDiv = document.getElementById('messages');
@@ -860,6 +1005,32 @@ const html = `<!DOCTYPE html>
 
 		function hideModelModal() {
 			document.getElementById('modelModal').style.display = 'none';
+		}
+
+		// Slash commands modal functions
+		function showSlashCommandsModal() {
+			document.getElementById('slashCommandsModal').style.display = 'flex';
+		}
+
+		function hideSlashCommandsModal() {
+			document.getElementById('slashCommandsModal').style.display = 'none';
+		}
+
+		function executeSlashCommand(command) {
+			// Hide the modal
+			hideSlashCommandsModal();
+			
+			// Clear the input since user selected a command
+			messageInput.value = '';
+			
+			// Send command to VS Code to execute in terminal
+			vscode.postMessage({
+				type: 'executeSlashCommand',
+				command: command
+			});
+			
+			// Show user feedback
+			addMessage('user', \`Executing /\${command} command in terminal. Check the terminal output and return when ready.\`, 'assistant');
 		}
 
 		function openModelTerminal() {
@@ -1648,6 +1819,22 @@ const html = `<!DOCTYPE html>
 		document.getElementById('settingsModal').addEventListener('click', (e) => {
 			if (e.target === document.getElementById('settingsModal')) {
 				hideSettingsModal();
+			}
+		});
+
+		// Close slash commands modal when clicking outside
+		document.getElementById('slashCommandsModal').addEventListener('click', (e) => {
+			if (e.target === document.getElementById('slashCommandsModal')) {
+				hideSlashCommandsModal();
+			}
+		});
+
+		// Detect slash commands input
+		messageInput.addEventListener('input', (e) => {
+			const value = messageInput.value;
+			// Only trigger when "/" is the very first and only character
+			if (value === '/') {
+				showSlashCommandsModal();
 			}
 		});
 

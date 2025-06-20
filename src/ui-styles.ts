@@ -1051,6 +1051,53 @@ const styles = `
         color: var(--vscode-foreground);
     }
 
+    /* Slash commands modal */
+    .slash-commands-list {
+        display: grid;
+        gap: 8px;
+        max-height: 400px;
+        overflow-y: auto;
+    }
+
+    .slash-command-item {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 12px 16px;
+        border-radius: 6px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        border: 1px solid transparent;
+    }
+
+    .slash-command-item:hover {
+        background-color: var(--vscode-list-hoverBackground);
+        border-color: var(--vscode-focusBorder);
+    }
+
+    .slash-command-icon {
+        font-size: 18px;
+        min-width: 24px;
+        text-align: center;
+    }
+
+    .slash-command-content {
+        flex: 1;
+    }
+
+    .slash-command-title {
+        font-size: 13px;
+        font-weight: 600;
+        color: var(--vscode-foreground);
+        margin-bottom: 2px;
+    }
+
+    .slash-command-description {
+        font-size: 11px;
+        color: var(--vscode-descriptionForeground);
+        opacity: 0.8;
+    }
+
     .status {
         padding: 8px 12px;
         background: linear-gradient(135deg, #1e1e1e 0%, #2d2d2d 100%);
