@@ -65,10 +65,25 @@ Ditch the command line and experience Claude Code like never before. This extens
 ### 🤖 **Model Selection**
 - **Opus** - Most capable model for complex tasks requiring deep reasoning
 - **Sonnet** - Balanced model offering great performance for most use cases
-- **Default** - Smart model allocation based on Claude's recommendations
+- **Default** - Uses your configured model setting
 - Model preference persists across sessions and is saved automatically
 - Easy switching via dropdown selector in the chat interface
 - Visual confirmation when switching between models
+- One-click model configuration through integrated terminal
+
+### ⚡ **Slash Commands Integration**
+- **Slash Commands Modal** - Type "/" to access all Claude Code commands instantly
+- **19+ Built-in Commands** - /cost, /status, /config, /help, /memory, /review, and more
+- **Custom Command Support** - Execute any Claude Code command with session context
+- **Session-Aware Execution** - All commands run with current conversation context
+- **Terminal Integration** - Commands open directly in VS Code terminal with WSL support
+
+### 🧠 **Advanced AI Modes**
+- **Plan First Mode** - Toggle to make Claude plan before implementing changes
+- **Thinking Mode** - Configurable intensity levels (Think, Think Hard, Think Harder, Ultrathink)
+- **Mode Toggles** - Simple switches above the text input area
+- **Intelligent Prompting** - Different prompts based on selected thinking intensity
+- **Token Awareness** - Higher thinking levels consume more tokens but provide deeper reasoning
 
 ---
 
@@ -168,6 +183,7 @@ If you want to revert these changes, just click "Restore Checkpoint" to go back 
 | `Ctrl+Shift+C` | Open Claude Code Chat |
 | `Enter` | Send message |
 | `@` | Open file picker |
+| `/` | Open slash commands modal |
 
 ### WSL Configuration (Windows Users)
 If you're using Claude Code through WSL (Windows Subsystem for Linux), you can configure the extension to use WSL:
