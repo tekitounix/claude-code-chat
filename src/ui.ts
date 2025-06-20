@@ -1493,7 +1493,9 @@ const html = `<!DOCTYPE html>
 			if (sessionStatus && newSessionBtn) {
 				// sessionInfo.style.display = 'none';
 				sessionStatus.style.display = 'none';
-				newSessionBtn.style.display = 'none';
+
+				// Always show new session
+				newSessionBtn.style.display = 'block';
 				// Keep history button visible - don't hide it
 				if (historyBtn) historyBtn.style.display = 'block';
 			}
