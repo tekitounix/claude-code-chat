@@ -7,9 +7,11 @@ import html from './ui';
 const exec = util.promisify(cp.exec);
 
 export function activate(context: vscode.ExtensionContext) {
+	console.log('Claude Code Chat extension is being activated!');
 	const provider = new ClaudeChatProvider(context.extensionUri, context);
 
 	const disposable = vscode.commands.registerCommand('claude-code-chat.openChat', () => {
+		console.log('Claude Code Chat command executed!');
 		provider.show();
 	});
 
@@ -33,6 +35,7 @@ export function activate(context: vscode.ExtensionContext) {
 	statusBarItem.show();
 
 	context.subscriptions.push(disposable, loadConversationDisposable, statusBarItem);
+	console.log('Claude Code Chat extension activation completed successfully!');
 }
 
 export function deactivate() { }
@@ -125,6 +128,7 @@ class ClaudeChatProvider {
 	}> = [];
 	private _treeProvider: ClaudeChatViewProvider | undefined;
 	private _currentClaudeProcess: cp.ChildProcess | undefined;
+	private _selectedModel: string = 'opus'; // Default model
 
 	constructor(
 		private readonly _extensionUri: vscode.Uri,
@@ -137,6 +141,9 @@ class ClaudeChatProvider {
 
 		// Load conversation index from workspace state
 		this._conversationIndex = this._context.workspaceState.get('claude.conversationIndex', []);
+
+		// Load saved model preference
+		this._selectedModel = this._context.workspaceState.get('claude.selectedModel', 'opus');
 
 		// Resume session from latest conversation
 		const latestConversation = this._getLatestConversation();
@@ -197,6 +204,18 @@ class ClaudeChatProvider {
 					case 'stopRequest':
 						this._stopClaudeProcess();
 						return;
+					case 'getSettings':
+						this._sendCurrentSettings();
+						return;
+					case 'updateSettings':
+						this._updateSettings(message.settings);
+						return;
+					case 'getClipboardText':
+						this._getClipboardText();
+						return;
+					case 'selectModel':
+						this._setSelectedModel(message.model);
+						return;
 				}
 			},
 			null,
@@ -228,6 +247,12 @@ class ClaudeChatProvider {
 				type: 'ready',
 				data: 'Ready to chat with Claude Code! Type your message below.'
 			});
+
+			// Send current model to webview
+			this._panel?.webview.postMessage({
+				type: 'modelSelected',
+				model: this._selectedModel
+			});
 		}, 100);
 	}
 
@@ -252,7 +277,7 @@ class ClaudeChatProvider {
 			await this._createBackupCommit(message);
 		}
 		catch (e) {
-			console.log("error", e)
+			console.log("error", e);
 		}
 
 		// Show loading indicator
@@ -271,6 +296,12 @@ class ClaudeChatProvider {
 			'--dangerously-skip-permissions'
 		];
 
+		// Add model selection if not using default
+		if (this._selectedModel && this._selectedModel !== 'default') {
+			args.push('--model', this._selectedModel);
+			console.log('Using model:', this._selectedModel);
+		}
+
 		// Add session resume if we have a current session
 		if (this._currentSessionId) {
 			args.push('--resume', this._currentSessionId);
@@ -281,15 +312,40 @@ class ClaudeChatProvider {
 
 		console.log('Claude command args:', args);
 
-		const claudeProcess = cp.spawn('claude', args, {
-			cwd: cwd,
-			stdio: ['pipe', 'pipe', 'pipe'],
-			env: {
-				...process.env,
-				FORCE_COLOR: '0',
-				NO_COLOR: '1'
-			}
-		});
+		// Get configuration
+		const config = vscode.workspace.getConfiguration('claudeCodeChat');
+		const wslEnabled = config.get<boolean>('wsl.enabled', false);
+		const wslDistro = config.get<string>('wsl.distro', 'Ubuntu');
+		const nodePath = config.get<string>('wsl.nodePath', '/usr/bin/node');
+		const claudePath = config.get<string>('wsl.claudePath', '/usr/local/bin/claude');
+
+		let claudeProcess: cp.ChildProcess;
+
+		if (wslEnabled) {
+			// Use WSL
+			console.log('Using WSL configuration:', { wslDistro, nodePath, claudePath });
+			claudeProcess = cp.spawn('wsl', ['-d', wslDistro, nodePath, '--no-warnings', '--enable-source-maps', claudePath, ...args], {
+				cwd: cwd,
+				stdio: ['pipe', 'pipe', 'pipe'],
+				env: {
+					...process.env,
+					FORCE_COLOR: '0',
+					NO_COLOR: '1'
+				}
+			});
+		} else {
+			// Use native claude command
+			console.log('Using native Claude command');
+			claudeProcess = cp.spawn('claude', args, {
+				cwd: cwd,
+				stdio: ['pipe', 'pipe', 'pipe'],
+				env: {
+					...process.env,
+					FORCE_COLOR: '0',
+					NO_COLOR: '1'
+				}
+			});
+		}
 
 		// Store process reference for potential termination
 		this._currentClaudeProcess = claudeProcess;
@@ -582,9 +638,19 @@ class ClaudeChatProvider {
 			type: 'loginRequired'
 		});
 
+		// Get configuration to check if WSL is enabled
+		const config = vscode.workspace.getConfiguration('claudeCodeChat');
+		const wslEnabled = config.get<boolean>('wsl.enabled', false);
+		const wslDistro = config.get<string>('wsl.distro', 'Ubuntu');
+		const claudePath = config.get<string>('wsl.claudePath', '/usr/local/bin/claude');
+
 		// Open terminal and run claude login
 		const terminal = vscode.window.createTerminal('Claude Login');
-		terminal.sendText('claude');
+		if (wslEnabled) {
+			terminal.sendText(`wsl -d ${wslDistro} ${claudePath}`);
+		} else {
+			terminal.sendText('claude');
+		}
 		terminal.show();
 
 		// Show info message
@@ -597,7 +663,7 @@ class ClaudeChatProvider {
 	private async _initializeBackupRepo(): Promise<void> {
 		try {
 			const workspaceFolder = vscode.workspace.workspaceFolders?.[0];
-			if (!workspaceFolder) return;
+			if (!workspaceFolder) {return;}
 
 			const storagePath = this._context.storageUri?.fsPath;
 			if (!storagePath) {
@@ -630,7 +696,7 @@ class ClaudeChatProvider {
 	private async _createBackupCommit(userMessage: string): Promise<void> {
 		try {
 			const workspaceFolder = vscode.workspace.workspaceFolders?.[0];
-			if (!workspaceFolder || !this._backupRepoPath) return;
+			if (!workspaceFolder || !this._backupRepoPath) {return;}
 
 			const workspacePath = workspaceFolder.uri.fsPath;
 			const now = new Date();
@@ -739,10 +805,10 @@ class ClaudeChatProvider {
 	private async _initializeConversations(): Promise<void> {
 		try {
 			const workspaceFolder = vscode.workspace.workspaceFolders?.[0];
-			if (!workspaceFolder) return;
+			if (!workspaceFolder) {return;}
 
 			const storagePath = this._context.storageUri?.fsPath;
-			if (!storagePath) return;
+			if (!storagePath) {return;}
 
 			this._conversationsPath = path.join(storagePath, 'conversations');
 
@@ -765,7 +831,7 @@ class ClaudeChatProvider {
 		}
 
 		if (message.type === 'sessionInfo') {
-			message.data.sessionId
+			message.data.sessionId;
 		}
 
 		// Send to UI
@@ -783,7 +849,7 @@ class ClaudeChatProvider {
 	}
 
 	private async _saveCurrentConversation(): Promise<void> {
-		if (!this._conversationsPath || this._currentConversation.length === 0) return;
+		if (!this._conversationsPath || this._currentConversation.length === 0) {return;}
 
 		try {
 			// Create filename from first user message and timestamp
@@ -1009,12 +1075,12 @@ class ClaudeChatProvider {
 	}
 
 	private async _loadConversationHistory(filename: string): Promise<void> {
-		console.log("_loadConversationHistory")
-		if (!this._conversationsPath) return;
+		console.log("_loadConversationHistory");
+		if (!this._conversationsPath) {return;}
 
 		try {
 			const filePath = path.join(this._conversationsPath, filename);
-			console.log("filePath", filePath)
+			console.log("filePath", filePath);
 			
 			let conversationData;
 			try {
@@ -1025,7 +1091,7 @@ class ClaudeChatProvider {
 				return;
 			}
 			
-			console.log("conversationData", conversationData)
+			console.log("conversationData", conversationData);
 			// Load conversation into current state
 			this._currentConversation = conversationData.messages || [];
 			this._conversationStartTime = conversationData.startTime;
@@ -1069,7 +1135,67 @@ class ClaudeChatProvider {
 	}
 
 	private _getHtmlForWebview(): string {
-		return html
+		return html;
+	}
+
+	private _sendCurrentSettings(): void {
+		const config = vscode.workspace.getConfiguration('claudeCodeChat');
+		const settings = {
+			'wsl.enabled': config.get<boolean>('wsl.enabled', false),
+			'wsl.distro': config.get<string>('wsl.distro', 'Ubuntu'),
+			'wsl.nodePath': config.get<string>('wsl.nodePath', '/usr/bin/node'),
+			'wsl.claudePath': config.get<string>('wsl.claudePath', '/usr/local/bin/claude')
+		};
+
+		this._panel?.webview.postMessage({
+			type: 'settingsData',
+			data: settings
+		});
+	}
+
+	private async _updateSettings(settings: { [key: string]: any }): Promise<void> {
+		const config = vscode.workspace.getConfiguration('claudeCodeChat');
+		
+		try {
+			for (const [key, value] of Object.entries(settings)) {
+				await config.update(key, value, vscode.ConfigurationTarget.Global);
+			}
+			
+			vscode.window.showInformationMessage('Settings updated successfully');
+		} catch (error) {
+			console.error('Failed to update settings:', error);
+			vscode.window.showErrorMessage('Failed to update settings');
+		}
+	}
+
+	private async _getClipboardText(): Promise<void> {
+		try {
+			const text = await vscode.env.clipboard.readText();
+			this._panel?.webview.postMessage({
+				type: 'clipboardText',
+				data: text
+			});
+		} catch (error) {
+			console.error('Failed to read clipboard:', error);
+		}
+	}
+
+	private _setSelectedModel(model: string): void {
+		// Validate model name to prevent issues mentioned in the GitHub issue
+		const validModels = ['opus', 'sonnet', 'default'];
+		if (validModels.includes(model)) {
+			this._selectedModel = model;
+			console.log('Model selected:', model);
+			
+			// Store the model preference in workspace state
+			this._context.workspaceState.update('claude.selectedModel', model);
+			
+			// Show confirmation
+			vscode.window.showInformationMessage(`Claude model switched to: ${model.charAt(0).toUpperCase() + model.slice(1)}`);
+		} else {
+			console.error('Invalid model selected:', model);
+			vscode.window.showErrorMessage(`Invalid model: ${model}. Please select Opus, Sonnet, or Default.`);
+		}
 	}
 
 	public dispose() {

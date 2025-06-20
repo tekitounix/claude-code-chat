@@ -21,6 +21,7 @@ Ditch the command line and experience Claude Code like never before. This extens
 🎨 **VS Code Native** - Seamlessly matches your editor's theme and design  
 📁 **Smart File Context** - Reference any file with simple @ mentions  
 🛑 **Full Control** - Start, stop, and manage AI processes with ease  
+🤖 **Model Selection** - Choose between Opus, Sonnet, or Default based on your needs  
 
 ![Claude Code Chat Cut](https://github.com/user-attachments/assets/d4ded28f-a4ed-4862-9766-c1ff89947775)
 
@@ -60,6 +61,14 @@ Ditch the command line and experience Claude Code like never before. This extens
 - Status bar integration with connection status
 - Activity bar panel for quick access
 - Responsive design for any screen size
+
+### 🤖 **Model Selection**
+- **Opus** - Most capable model for complex tasks requiring deep reasoning
+- **Sonnet** - Balanced model offering great performance for most use cases
+- **Default** - Smart model allocation based on Claude's recommendations
+- Model preference persists across sessions and is saved automatically
+- Easy switching via dropdown selector in the chat interface
+- Visual confirmation when switching between models
 
 ---
 
@@ -159,6 +168,27 @@ If you want to revert these changes, just click "Restore Checkpoint" to go back 
 | `Ctrl+Shift+C` | Open Claude Code Chat |
 | `Enter` | Send message |
 | `@` | Open file picker |
+
+### WSL Configuration (Windows Users)
+If you're using Claude Code through WSL (Windows Subsystem for Linux), you can configure the extension to use WSL:
+
+1. Open VS Code Settings (`Ctrl+,` or `Cmd+,`)
+2. Search for "Claude Code Chat"
+3. Configure these settings:
+   - **Claude Code Chat: WSL Enabled** - Enable WSL integration
+   - **Claude Code Chat: WSL Distro** - Your WSL distribution name (e.g., `Ubuntu`, `Debian`)
+   - **Claude Code Chat: WSL Node Path** - Path to Node.js in WSL (default: `/usr/bin/node`)
+   - **Claude Code Chat: WSL Claude Path** - Path to Claude in WSL (default: `/usr/local/bin/claude`)
+
+Example configuration in `settings.json`:
+```json
+{
+  "claudeCodeChat.wsl.enabled": true,
+  "claudeCodeChat.wsl.distro": "Ubuntu",
+  "claudeCodeChat.wsl.nodePath": "/usr/bin/node",
+  "claudeCodeChat.wsl.claudePath": "/usr/local/bin/claude"
+}
+```
 
 ---
 

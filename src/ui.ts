@@ -484,11 +484,38 @@ const html = `<!DOCTYPE html>
 		.input-controls {
 			display: flex;
 			align-items: center;
-			justify-content: end;
+			justify-content: space-between;
 			gap: 8px;
 			padding: 2px 4px;
 			border-top: 1px solid var(--vscode-panel-border);
 			background-color: var(--vscode-input-background);
+		}
+
+		.left-controls {
+			display: flex;
+			align-items: center;
+			gap: 8px;
+		}
+
+		.model-selector {
+			background-color: rgba(128, 128, 128, 0.15);
+			color: var(--vscode-foreground);
+			border: none;
+			padding: 3px 7px;
+			border-radius: 4px;
+			cursor: pointer;
+			font-size: 11px;
+			font-weight: 500;
+			transition: all 0.2s ease;
+			opacity: 0.9;
+			display: flex;
+			align-items: center;
+			gap: 4px;
+		}
+
+		.model-selector:hover {
+			background-color: rgba(128, 128, 128, 0.25);
+			opacity: 1;
 		}
 
 		.tools-btn {
@@ -727,7 +754,7 @@ const html = `<!DOCTYPE html>
 			background-color: var(--vscode-editor-background);
 			border: 1px solid var(--vscode-panel-border);
 			border-radius: 4px;
-			width: 450px;
+			width: 500px;
 			max-height: 600px;
 			display: flex;
 			flex-direction: column;
@@ -795,6 +822,17 @@ const html = `<!DOCTYPE html>
 
 		.tool-item input[type="checkbox"]:disabled + label {
 			opacity: 0.7;
+		}
+
+		.settings-group {
+			margin-bottom: 20px;
+		}
+
+		.settings-group h3 {
+			margin: 0 0 12px 0;
+			font-size: 13px;
+			font-weight: 600;
+			color: var(--vscode-foreground);
 		}
 
 		.status {
@@ -1071,6 +1109,7 @@ const html = `<!DOCTYPE html>
 		</div>
 		<div style="display: flex; gap: 8px; align-items: center;">
 			<div id="sessionStatus" class="session-status" style="display: none;">No session</div>
+			<button class="btn outlined" id="settingsBtn" onclick="toggleSettings()" title="Settings">⚙️</button>
 			<button class="btn outlined" id="historyBtn" onclick="toggleConversationHistory()" style="display: none;">📚 History</button>
 			<button class="btn primary" id="newSessionBtn" onclick="newSession()" style="display: none;">New Chat</button>
 		</div>
@@ -1092,42 +1131,52 @@ const html = `<!DOCTYPE html>
 			<div class="textarea-wrapper">
 				<textarea class="input-field" id="messageInput" placeholder="Type your message to Claude Code..." rows="1"></textarea>
 				<div class="input-controls">
-					<button class="tools-btn" onclick="showToolsModal()" title="Configure tools">
-						Tools: All
-						<svg width="8" height="8" viewBox="0 0 8 8" fill="currentColor">
-							<path d="M1 2.5l3 3 3-3"></path>
-						</svg>
-					</button>
+					<div class="left-controls">
+						<button class="model-selector" id="modelSelector" onclick="showModelSelector()" title="Select model">
+							<span id="selectedModel">Opus</span>
+							<svg width="8" height="8" viewBox="0 0 8 8" fill="currentColor">
+								<path d="M1 2.5l3 3 3-3"></path>
+							</svg>
+						</button>
+						<button class="tools-btn" onclick="showToolsModal()" title="Configure tools">
+							Tools: All
+							<svg width="8" height="8" viewBox="0 0 8 8" fill="currentColor">
+								<path d="M1 2.5l3 3 3-3"></path>
+							</svg>
+						</button>
+					</div>
+					<div class="right-controls">
 						<button class="at-btn" onclick="showFilePicker()" title="Reference files">@</button>
 						<button class="image-btn" id="imageBtn" onclick="selectImage()" title="Attach images">
-				<svg
-					xmlns="http://www.w3.org/2000/svg"
-					viewBox="0 0 16 16"
-					width="14"
-					height="16"
-					>
-					<g fill="currentColor">
-						<path d="M6.002 5.5a1.5 1.5 0 1 1-3 0a1.5 1.5 0 0 1 3 0"></path>
-						<path d="M1.5 2A1.5 1.5 0 0 0 0 3.5v9A1.5 1.5 0 0 0 1.5 14h13a1.5 1.5 0 0 0 1.5-1.5v-9A1.5 1.5 0 0 0 14.5 2zm13 1a.5.5 0 0 1 .5.5v6l-3.775-1.947a.5.5 0 0 0-.577.093l-3.71 3.71l-2.66-1.772a.5.5 0 0 0-.63.062L1.002 12v.54L1 12.5v-9a.5.5 0 0 1 .5-.5z"></path>
-					</g>
-					</svg>
-					</button>
-					<button class="send-btn" id="sendBtn" onclick="sendMessage()">
-					<div>
-					<span>Send </span>
-					   <svg
-						xmlns="http://www.w3.org/2000/svg"
-						viewBox="0 0 24 24"
-						width="11"
-						height="11"
-						>
-						<path
-							fill="currentColor"
-							d="M20 4v9a4 4 0 0 1-4 4H6.914l2.5 2.5L8 20.914L3.086 16L8 11.086L9.414 12.5l-2.5 2.5H16a2 2 0 0 0 2-2V4z"
-						></path>
+						<svg
+							xmlns="http://www.w3.org/2000/svg"
+							viewBox="0 0 16 16"
+							width="14"
+							height="16"
+							>
+							<g fill="currentColor">
+								<path d="M6.002 5.5a1.5 1.5 0 1 1-3 0a1.5 1.5 0 0 1 3 0"></path>
+								<path d="M1.5 2A1.5 1.5 0 0 0 0 3.5v9A1.5 1.5 0 0 0 1.5 14h13a1.5 1.5 0 0 0 1.5-1.5v-9A1.5 1.5 0 0 0 14.5 2zm13 1a.5.5 0 0 1 .5.5v6l-3.775-1.947a.5.5 0 0 0-.577.093l-3.71 3.71l-2.66-1.772a.5.5 0 0 0-.63.062L1.002 12v.54L1 12.5v-9a.5.5 0 0 1 .5-.5z"></path>
+							</g>
 						</svg>
-						</div>
-					</button>
+						</button>
+						<button class="send-btn" id="sendBtn" onclick="sendMessage()">
+						<div>
+						<span>Send </span>
+						   <svg
+							xmlns="http://www.w3.org/2000/svg"
+							viewBox="0 0 24 24"
+							width="11"
+							height="11"
+							>
+							<path
+								fill="currentColor"
+								d="M20 4v9a4 4 0 0 1-4 4H6.914l2.5 2.5L8 20.914L3.086 16L8 11.086L9.414 12.5l-2.5 2.5H16a2 2 0 0 0 2-2V4z"
+							></path>
+							</svg>
+							</div>
+						</button>
+					</div>
 				</div>
 			</div>
 		</div>
@@ -1211,6 +1260,96 @@ const html = `<!DOCTYPE html>
 				<div class="tool-item">
 					<input type="checkbox" id="tool-webfetch" checked disabled>
 					<label for="tool-webfetch">WebFetch - Fetch web content</label>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<!-- Settings modal -->
+	<div id="settingsModal" class="tools-modal" style="display: none;">
+		<div class="tools-modal-content">
+			<div class="tools-modal-header">
+				<span>Claude Code Chat Settings</span>
+				<button class="tools-close-btn" onclick="hideSettingsModal()">✕</button>
+			</div>
+			<div class="tools-list">
+				<h3 style="margin-top: 0; margin-bottom: 16px; font-size: 14px; font-weight: 600;">WSL Configuration</h3>
+				
+				<div class="settings-group">
+					<div class="tool-item">
+						<input type="checkbox" id="wsl-enabled" onchange="updateSettings()">
+						<label for="wsl-enabled">Enable WSL Integration</label>
+					</div>
+					
+					<div id="wslOptions" style="margin-left: 24px; margin-top: 12px;">
+						<div style="margin-bottom: 12px;">
+							<label style="display: block; margin-bottom: 4px; font-size: 12px; color: var(--vscode-descriptionForeground);">WSL Distribution</label>
+							<input type="text" id="wsl-distro" class="file-search-input" style="width: 100%;" placeholder="Ubuntu" onchange="updateSettings()">
+						</div>
+						
+						<div style="margin-bottom: 12px;">
+							<label style="display: block; margin-bottom: 4px; font-size: 12px; color: var(--vscode-descriptionForeground);">Node.js Path in WSL</label>
+							<input type="text" id="wsl-node-path" class="file-search-input" style="width: 100%;" placeholder="/usr/bin/node" onchange="updateSettings()">
+							<p style="font-size: 11px; color: var(--vscode-descriptionForeground); margin: 4px 0 0 0;">
+								Find your node installation path in WSL by running: <code style="background: var(--vscode-textCodeBlock-background); padding: 2px 4px; border-radius: 3px;">which node</code>
+							</p>
+						</div>
+						
+						<div style="margin-bottom: 12px;">
+							<label style="display: block; margin-bottom: 4px; font-size: 12px; color: var(--vscode-descriptionForeground);">Claude Path in WSL</label>
+							<input type="text" id="wsl-claude-path" class="file-search-input" style="width: 100%;" placeholder="/usr/local/bin/claude" onchange="updateSettings()">
+							<p style="font-size: 11px; color: var(--vscode-descriptionForeground); margin: 4px 0 0 0;">
+								Find your claude installation path in WSL by running: <code style="background: var(--vscode-textCodeBlock-background); padding: 2px 4px; border-radius: 3px;">which claude</code>
+							</p>
+						</div>
+					</div>
+				</div>
+				
+				<div style="margin-top: 20px; padding-top: 16px; border-top: 1px solid var(--vscode-panel-border);">
+					<p style="font-size: 11px; color: var(--vscode-descriptionForeground); margin: 0;">
+						WSL integration allows you to run Claude Code from within Windows Subsystem for Linux.
+						This is useful if you have Claude installed in WSL instead of Windows.
+					</p>
+				</div>
+				
+			</div>
+		</div>
+	</div>
+
+	<!-- Model selector modal -->
+	<div id="modelModal" class="tools-modal" style="display: none;">
+		<div class="tools-modal-content" style="width: 400px;">
+			<div class="tools-modal-header">
+				<span>Select Model</span>
+				<button class="tools-close-btn" onclick="hideModelModal()">✕</button>
+			</div>
+			<div class="tools-list">
+				<div class="tool-item" onclick="selectModel('opus')">
+					<input type="radio" name="model" id="model-opus" value="opus" checked>
+					<label for="model-opus" style="cursor: pointer;">
+						<strong>Opus</strong> - Most capable model
+						<div style="font-size: 11px; color: var(--vscode-descriptionForeground); margin-top: 2px;">
+							Best for complex tasks and highest quality output
+						</div>
+					</label>
+				</div>
+				<div class="tool-item" onclick="selectModel('sonnet')">
+					<input type="radio" name="model" id="model-sonnet" value="sonnet">
+					<label for="model-sonnet" style="cursor: pointer;">
+						<strong>Sonnet</strong> - Balanced model
+						<div style="font-size: 11px; color: var(--vscode-descriptionForeground); margin-top: 2px;">
+							Good balance of speed and capability
+						</div>
+					</label>
+				</div>
+				<div class="tool-item" onclick="selectModel('default')">
+					<input type="radio" name="model" id="model-default" value="default">
+					<label for="model-default" style="cursor: pointer;">
+						<strong>Default</strong> - Smart allocation
+						<div style="font-size: 11px; color: var(--vscode-descriptionForeground); margin-top: 2px;">
+							Uses Opus 4 for up to 50% of usage limits, then switches to Sonnet 4
+						</div>
+					</label>
 				</div>
 			</div>
 		</div>
@@ -1602,7 +1741,77 @@ const html = `<!DOCTYPE html>
 			} else if (e.key === 'Escape' && filePickerModal.style.display === 'flex') {
 				e.preventDefault();
 				hideFilePicker();
+			} else if (e.key === 'v' && (e.ctrlKey || e.metaKey)) {
+				// Handle Ctrl+V/Cmd+V explicitly in case paste event doesn't fire
+				// Don't prevent default - let browser handle it first
+				setTimeout(() => {
+					// If value hasn't changed, manually trigger paste
+					const currentValue = messageInput.value;
+					setTimeout(() => {
+						if (messageInput.value === currentValue) {
+							// Value didn't change, request clipboard from VS Code
+							vscode.postMessage({
+								type: 'getClipboardText'
+							});
+						}
+					}, 50);
+				}, 0);
 			}
+		});
+
+		// Add explicit paste event handler for better clipboard support in VSCode webviews
+		messageInput.addEventListener('paste', async (e) => {
+			e.preventDefault();
+			
+			try {
+				// Try to get clipboard data from the event first
+				const clipboardData = e.clipboardData;
+				let text = '';
+				
+				if (clipboardData) {
+					text = clipboardData.getData('text/plain');
+				}
+				
+				// If no text from event, try navigator.clipboard API
+				if (!text && navigator.clipboard && navigator.clipboard.readText) {
+					try {
+						text = await navigator.clipboard.readText();
+					} catch (err) {
+						console.log('Clipboard API failed:', err);
+					}
+				}
+				
+				// If still no text, request from VS Code extension
+				if (!text) {
+					vscode.postMessage({
+						type: 'getClipboardText'
+					});
+					return;
+				}
+				
+				// Insert text at cursor position
+				const start = messageInput.selectionStart;
+				const end = messageInput.selectionEnd;
+				const currentValue = messageInput.value;
+				
+				const newValue = currentValue.substring(0, start) + text + currentValue.substring(end);
+				messageInput.value = newValue;
+				
+				// Set cursor position after pasted text
+				const newCursorPos = start + text.length;
+				messageInput.setSelectionRange(newCursorPos, newCursorPos);
+				
+				// Trigger input event to adjust height
+				messageInput.dispatchEvent(new Event('input', { bubbles: true }));
+			} catch (error) {
+				console.error('Paste error:', error);
+			}
+		});
+
+		// Handle context menu paste
+		messageInput.addEventListener('contextmenu', (e) => {
+			// Don't prevent default - allow context menu to show
+			// but ensure paste will work when selected
 		});
 
 		// Initialize textarea height
@@ -1651,6 +1860,69 @@ const html = `<!DOCTYPE html>
 		document.getElementById('toolsModal').addEventListener('click', (e) => {
 			if (e.target === document.getElementById('toolsModal')) {
 				hideToolsModal();
+			}
+		});
+
+		// Model selector functions
+		let currentModel = 'opus'; // Default model
+
+		function showModelSelector() {
+			document.getElementById('modelModal').style.display = 'flex';
+			// Select the current model radio button
+			const radioButton = document.getElementById('model-' + currentModel);
+			if (radioButton) {
+				radioButton.checked = true;
+			}
+		}
+
+		function hideModelModal() {
+			document.getElementById('modelModal').style.display = 'none';
+		}
+
+		function selectModel(model, fromBackend = false) {
+			currentModel = model;
+			
+			// Update the display text
+			const displayNames = {
+				'opus': 'Opus',
+				'sonnet': 'Sonnet',
+				'default': 'Default'
+			};
+			document.getElementById('selectedModel').textContent = displayNames[model] || model;
+			
+			// Only send model selection to VS Code extension if not from backend
+			if (!fromBackend) {
+				vscode.postMessage({
+					type: 'selectModel',
+					model: model
+				});
+				
+				// Save preference
+				localStorage.setItem('selectedModel', model);
+			}
+			
+			// Update radio button if modal is open
+			const radioButton = document.getElementById('model-' + model);
+			if (radioButton) {
+				radioButton.checked = true;
+			}
+			
+			hideModelModal();
+		}
+
+		// Initialize model display without sending message
+		currentModel = 'opus';
+		const displayNames = {
+			'opus': 'Opus',
+			'sonnet': 'Sonnet',
+			'default': 'Default'
+		};
+		document.getElementById('selectedModel').textContent = displayNames[currentModel];
+
+		// Close model modal when clicking outside
+		document.getElementById('modelModal').addEventListener('click', (e) => {
+			if (e.target === document.getElementById('modelModal')) {
+				hideModelModal();
 			}
 		});
 
@@ -1914,6 +2186,14 @@ const html = `<!DOCTYPE html>
 					
 				case 'conversationList':
 					displayConversationList(message.data);
+					break;
+				case 'clipboardText':
+					handleClipboardText(message.data);
+					break;
+				case 'modelSelected':
+					// Update the UI with the current model
+					currentModel = message.model;
+					selectModel(message.model, true);
 					break;
 			}
 		});
@@ -2281,6 +2561,91 @@ const html = `<!DOCTYPE html>
 				listDiv.appendChild(item);
 			});
 		}
+
+		function handleClipboardText(text) {
+			if (!text) return;
+			
+			// Insert text at cursor position
+			const start = messageInput.selectionStart;
+			const end = messageInput.selectionEnd;
+			const currentValue = messageInput.value;
+			
+			const newValue = currentValue.substring(0, start) + text + currentValue.substring(end);
+			messageInput.value = newValue;
+			
+			// Set cursor position after pasted text
+			const newCursorPos = start + text.length;
+			messageInput.setSelectionRange(newCursorPos, newCursorPos);
+			
+			// Trigger input event to adjust height
+			messageInput.dispatchEvent(new Event('input', { bubbles: true }));
+		}
+
+		// Settings functions
+
+		function toggleSettings() {
+			const settingsModal = document.getElementById('settingsModal');
+			if (settingsModal.style.display === 'none') {
+				// Request current settings from VS Code
+				vscode.postMessage({
+					type: 'getSettings'
+				});
+				settingsModal.style.display = 'flex';
+			} else {
+				hideSettingsModal();
+			}
+		}
+
+		function hideSettingsModal() {
+			document.getElementById('settingsModal').style.display = 'none';
+		}
+
+		function updateSettings() {
+			const wslEnabled = document.getElementById('wsl-enabled').checked;
+			const wslDistro = document.getElementById('wsl-distro').value;
+			const wslNodePath = document.getElementById('wsl-node-path').value;
+			const wslClaudePath = document.getElementById('wsl-claude-path').value;
+
+			// Update WSL options visibility
+			document.getElementById('wslOptions').style.display = wslEnabled ? 'block' : 'none';
+
+			// Send settings to VS Code immediately
+			vscode.postMessage({
+				type: 'updateSettings',
+				settings: {
+					'wsl.enabled': wslEnabled,
+					'wsl.distro': wslDistro || 'Ubuntu',
+					'wsl.nodePath': wslNodePath || '/usr/bin/node',
+					'wsl.claudePath': wslClaudePath || '/usr/local/bin/claude'
+				}
+			});
+		}
+
+
+		// Close settings modal when clicking outside
+		document.getElementById('settingsModal').addEventListener('click', (e) => {
+			if (e.target === document.getElementById('settingsModal')) {
+				hideSettingsModal();
+			}
+		});
+
+		// Add settings message handler to window message event
+		const originalMessageHandler = window.onmessage;
+		window.addEventListener('message', event => {
+			const message = event.data;
+			
+			if (message.type === 'settingsData') {
+				// Update UI with current settings
+				document.getElementById('wsl-enabled').checked = message.data['wsl.enabled'] || false;
+				document.getElementById('wsl-distro').value = message.data['wsl.distro'] || 'Ubuntu';
+				document.getElementById('wsl-node-path').value = message.data['wsl.nodePath'] || '/usr/bin/node';
+				document.getElementById('wsl-claude-path').value = message.data['wsl.claudePath'] || '/usr/local/bin/claude';
+				
+				// Show/hide WSL options
+				document.getElementById('wslOptions').style.display = message.data['wsl.enabled'] ? 'block' : 'none';
+			}
+		});
+
 	</script>
 </body>
 </html>`;
