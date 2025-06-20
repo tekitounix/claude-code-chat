@@ -40,11 +40,11 @@ const html = `<!DOCTYPE html>
 		<div class="input-container" id="inputContainer">
 			<div class="input-modes">
 				<div class="mode-toggle">
-					<span>Plan First</span>
+					<span onclick="togglePlanMode()">Plan First</span>
 					<div class="mode-switch" id="planModeSwitch" onclick="togglePlanMode()"></div>
 				</div>
 				<div class="mode-toggle">
-					<span>Thinking Mode</span>
+					<span onclick="toggleThinkingMode()">Thinking Mode</span>
 					<div class="mode-switch" id="thinkingModeSwitch" onclick="toggleThinkingMode()"></div>
 				</div>
 			</div>
