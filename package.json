@@ -168,6 +168,12 @@
           "type": "string",
           "default": "/usr/local/bin/claude",
           "description": "Path to Claude executable in the WSL distribution"
+        },
+        "claudeCodeChat.thinking.intensity": {
+          "type": "string",
+          "enum": ["think", "think-hard", "think-harder", "ultrathink"],
+          "default": "think",
+          "description": "Thinking mode intensity level. Higher levels provide more detailed reasoning but consume more tokens."
         }
       }
     }

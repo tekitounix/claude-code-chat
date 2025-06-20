@@ -873,7 +873,6 @@ const styles = `
         align-items: flex-start;
         gap: 12px;
         padding: 16px 0;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
         cursor: pointer;
         border-radius: 6px;
         transition: background-color 0.2s ease;
@@ -946,8 +945,94 @@ const styles = `
         align-self: flex-start;
     }
 
+    /* Thinking intensity slider */
+    .thinking-slider-container {
+        position: relative;
+        padding: 0px 16px;
+        margin: 12px 0;
+    }
+
+    .thinking-slider {
+        width: 100%;
+        height: 4px;
+        -webkit-appearance: none;
+        appearance: none;
+        background: var(--vscode-panel-border);
+        outline: none !important;
+        border: none;
+        cursor: pointer;
+        border-radius: 2px;
+    }
+
+    .thinking-slider::-webkit-slider-thumb {
+        -webkit-appearance: none;
+        appearance: none;
+        width: 16px;
+        height: 16px;
+        background: var(--vscode-foreground);
+        cursor: pointer;
+        border-radius: 50%;
+        transition: transform 0.2s ease;
+    }
+
+    .thinking-slider::-webkit-slider-thumb:hover {
+        transform: scale(1.2);
+    }
+
+    .thinking-slider::-moz-range-thumb {
+        width: 16px;
+        height: 16px;
+        background: var(--vscode-foreground);
+        cursor: pointer;
+        border-radius: 50%;
+        border: none;
+        transition: transform 0.2s ease;
+    }
+
+    .thinking-slider::-moz-range-thumb:hover {
+        transform: scale(1.2);
+    }
+
+    .slider-labels {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 12px;
+        padding: 0 8px;
+    }
+
+    .slider-label {
+        font-size: 12px;
+        color: var(--vscode-descriptionForeground);
+        opacity: 0.7;
+        transition: all 0.2s ease;
+        text-align: center;
+        width: 100px;
+        cursor: pointer;
+    }
+
+    .slider-label:hover {
+        opacity: 1;
+        color: var(--vscode-foreground);
+    }
+
+    .slider-label.active {
+        opacity: 1;
+        color: var(--vscode-foreground);
+        font-weight: 500;
+    }
+
+    .slider-label:first-child {
+        margin-left: -50px;
+    }
+
+    .slider-label:last-child {
+        margin-right: -50px;
+    }
+
     .settings-group {
-        margin-bottom: 20px;
+        padding-bottom: 20px;
+        margin-bottom: 40px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
     }
 
     .settings-group h3 {

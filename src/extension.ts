@@ -263,13 +263,35 @@ class ClaudeChatProvider {
 		const workspaceFolder = vscode.workspace.workspaceFolders?.[0];
 		const cwd = workspaceFolder ? workspaceFolder.uri.fsPath : process.cwd();
 
+		// Get thinking intensity setting
+		const configThink = vscode.workspace.getConfiguration('claudeCodeChat');
+		const thinkingIntensity = configThink.get<string>('thinking.intensity', 'think');
+
 		// Prepend mode instructions if enabled
 		let actualMessage = message;
-		if (planMode && !message.toLowerCase().includes('plan first')) {
+		if (planMode) {
 			actualMessage = 'PLAN FIRST BEFORE MAKING ANY CHANGES, SHOW ME IN DETAIL WHAT YOU WILL CHANGE. DONT PROCEED BEFORE I ACCEPT IN A DIFFERENT MESSAGE: \n' + message;
 		}
-		if (thinkingMode && !actualMessage.toLowerCase().includes('think through')) {
-			actualMessage = 'THINK THROUGH THIS STEP BY STEP: \n' + actualMessage;
+		if (thinkingMode) {
+			let thinkingPrompt = '';
+			const thinkingMesssage = ' THROUGH THIS STEP BY STEP: \n'
+			switch (thinkingIntensity) {
+				case 'think':
+					thinkingPrompt = 'THINK';
+					break;
+				case 'think-hard':
+					thinkingPrompt = 'THINK HARD';
+					break;
+				case 'think-harder':
+					thinkingPrompt = 'THINK HARDER';
+					break;
+				case 'ultrathink':
+					thinkingPrompt = 'ULTRATHINK';
+					break;
+				default:
+					thinkingPrompt = 'THINK';
+			}
+			actualMessage = thinkingPrompt + thinkingMesssage + actualMessage;
 		}
 
 		// Show original user input in chat and save to conversation (without mode prefixes)
@@ -1153,6 +1175,7 @@ class ClaudeChatProvider {
 	private _sendCurrentSettings(): void {
 		const config = vscode.workspace.getConfiguration('claudeCodeChat');
 		const settings = {
+			'thinking.intensity': config.get<string>('thinking.intensity', 'think'),
 			'wsl.enabled': config.get<boolean>('wsl.enabled', false),
 			'wsl.distro': config.get<string>('wsl.distro', 'Ubuntu'),
 			'wsl.nodePath': config.get<string>('wsl.nodePath', '/usr/bin/node'),

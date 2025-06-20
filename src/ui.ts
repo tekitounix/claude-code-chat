@@ -195,7 +195,25 @@ const html = `<!DOCTYPE html>
 				<button class="tools-close-btn" onclick="hideSettingsModal()">✕</button>
 			</div>
 			<div class="tools-list">
-				<h3 style="margin-top: 0; margin-bottom: 16px; font-size: 14px; font-weight: 600;">WSL Configuration</h3>
+				<h3 style="margin-top: 0; margin-bottom: 16px; font-size: 14px; font-weight: 600;">Thinking Mode Configuration</h3>
+								<div class="settings-group">
+				<div>
+					<p style="font-size: 11px; color: var(--vscode-descriptionForeground); margin: 0;">
+						Configure the intensity of thinking mode. Higher levels provide more detailed reasoning but consume more tokens.
+					</p>
+				</div>
+				<div class="thinking-slider-container">
+					<input type="range" min="0" max="3" value="0" step="1" class="thinking-slider" id="thinkingSlider" oninput="updateThinkingIntensity(this.value)" onchange="updateSettings()">
+					<div class="slider-labels">
+						<div class="slider-label active" id="label-0" onclick="setThinkingIntensity(0)">Think</div>
+						<div class="slider-label" id="label-1" onclick="setThinkingIntensity(1)">Think Hard</div>
+						<div class="slider-label" id="label-2" onclick="setThinkingIntensity(2)">Think Harder</div>
+						<div class="slider-label" id="label-3" onclick="setThinkingIntensity(3)">Ultrathink</div>
+					</div>
+				</div>
+				</div>
+
+				<h3 style="margin-top: 24px; margin-bottom: 16px; font-size: 14px; font-weight: 600;">WSL Configuration</h3>
 				<div>
 					<p style="font-size: 11px; color: var(--vscode-descriptionForeground); margin: 0;">
 						WSL integration allows you to run Claude Code from within Windows Subsystem for Linux.
@@ -1576,7 +1594,34 @@ const html = `<!DOCTYPE html>
 			document.getElementById('settingsModal').style.display = 'none';
 		}
 
+		function updateThinkingIntensity(value) {
+			// Update label highlighting
+			for (let i = 0; i < 4; i++) {
+				const label = document.getElementById('label-' + i);
+				if (i == value) {
+					label.classList.add('active');
+				} else {
+					label.classList.remove('active');
+				}
+			}
+		}
+
+		function setThinkingIntensity(value) {
+			// Set slider value
+			document.getElementById('thinkingSlider').value = value;
+			
+			// Update visual state
+			updateThinkingIntensity(value);
+			
+			// Save settings
+			updateSettings();
+		}
+
 		function updateSettings() {
+			const thinkingSlider = document.getElementById('thinkingSlider');
+			const intensityValues = ['think', 'think-hard', 'think-harder', 'ultrathink'];
+			const thinkingIntensity = intensityValues[thinkingSlider.value] || 'think';
+			
 			const wslEnabled = document.getElementById('wsl-enabled').checked;
 			const wslDistro = document.getElementById('wsl-distro').value;
 			const wslNodePath = document.getElementById('wsl-node-path').value;
@@ -1589,6 +1634,7 @@ const html = `<!DOCTYPE html>
 			vscode.postMessage({
 				type: 'updateSettings',
 				settings: {
+					'thinking.intensity': thinkingIntensity,
 					'wsl.enabled': wslEnabled,
 					'wsl.distro': wslDistro || 'Ubuntu',
 					'wsl.nodePath': wslNodePath || '/usr/bin/node',
@@ -1612,6 +1658,16 @@ const html = `<!DOCTYPE html>
 			
 			if (message.type === 'settingsData') {
 				// Update UI with current settings
+				const thinkingIntensity = message.data['thinking.intensity'] || 'think';
+				const intensityValues = ['think', 'think-hard', 'think-harder', 'ultrathink'];
+				const sliderValue = intensityValues.indexOf(thinkingIntensity);
+				
+				const thinkingSlider = document.getElementById('thinkingSlider');
+				if (thinkingSlider) {
+					thinkingSlider.value = sliderValue >= 0 ? sliderValue : 0;
+					updateThinkingIntensity(thinkingSlider.value);
+				}
+				
 				document.getElementById('wsl-enabled').checked = message.data['wsl.enabled'] || false;
 				document.getElementById('wsl-distro').value = message.data['wsl.distro'] || 'Ubuntu';
 				document.getElementById('wsl-node-path').value = message.data['wsl.nodePath'] || '/usr/bin/node';
