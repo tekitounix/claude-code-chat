@@ -184,7 +184,12 @@ const html = `<!DOCTYPE html>
 			</div>
 			<div class="tools-list">
 				<h3 style="margin-top: 0; margin-bottom: 16px; font-size: 14px; font-weight: 600;">WSL Configuration</h3>
-				
+				<div>
+					<p style="font-size: 11px; color: var(--vscode-descriptionForeground); margin: 0;">
+						WSL integration allows you to run Claude Code from within Windows Subsystem for Linux.
+						This is useful if you have Claude installed in WSL instead of Windows.
+					</p>
+				</div>
 				<div class="settings-group">
 					<div class="tool-item">
 						<input type="checkbox" id="wsl-enabled" onchange="updateSettings()">
@@ -214,12 +219,18 @@ const html = `<!DOCTYPE html>
 						</div>
 					</div>
 				</div>
-				
-				<div style="margin-top: 20px; padding-top: 16px; border-top: 1px solid var(--vscode-panel-border);">
+
+				<h3 style="margin-top: 24px; margin-bottom: 16px; font-size: 14px; font-weight: 600;">MCP Configuration</h3>
+				<div>
 					<p style="font-size: 11px; color: var(--vscode-descriptionForeground); margin: 0;">
-						WSL integration allows you to run Claude Code from within Windows Subsystem for Linux.
-						This is useful if you have Claude installed in WSL instead of Windows.
+						Model Context Protocol (MCP) allows Claude Code to connect to external systems and services for enhanced capabilities like databases, APIs, and tools.
 					</p>
+				</div>
+				<div class="settings-group">
+					<div class="tool-item">
+						<input type="checkbox" id="mcp-enabled" disabled>
+						<label for="mcp-enabled">Enable MCP Integration <span style="font-style: italic; opacity: 0.7;">(Coming Soon)</span></label>
+					</div>
 				</div>
 				
 			</div>
