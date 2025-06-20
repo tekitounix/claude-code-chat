@@ -38,19 +38,21 @@ const html = `<!DOCTYPE html>
 	<div class="chat-container" id="chatContainer">
 		<div class="messages" id="messages"></div>
 		<div class="input-container" id="inputContainer">
+			<div class="input-modes">
+				<div class="mode-toggle">
+					<span>Plan First</span>
+					<div class="mode-switch" id="planModeSwitch" onclick="togglePlanMode()"></div>
+				</div>
+				<div class="mode-toggle">
+					<span>Thinking Mode</span>
+					<div class="mode-switch" id="thinkingModeSwitch" onclick="toggleThinkingMode()"></div>
+				</div>
+			</div>
 			<div class="textarea-container">
 				<div class="textarea-wrapper">
 					<textarea class="input-field" id="messageInput" placeholder="Type your message to Claude Code..." rows="1"></textarea>
 					<div class="input-controls">
 						<div class="left-controls">
-							<button class="mode-btn" id="planModeBtn" onclick="togglePlanMode()" title="Plan first mode">
-								<span>Plan First</span>
-								<div class="mode-indicator" id="planModeIndicator"></div>
-							</button>
-							<button class="mode-btn" id="thinkingModeBtn" onclick="toggleThinkingMode()" title="Thinking mode">
-								<span>Thinking</span>
-								<div class="mode-indicator" id="thinkingModeIndicator"></div>
-							</button>
 							<button class="model-selector" id="modelSelector" onclick="showModelSelector()" title="Select model">
 								<span id="selectedModel">Opus</span>
 								<svg width="8" height="8" viewBox="0 0 8 8" fill="currentColor">
@@ -601,21 +603,21 @@ const html = `<!DOCTYPE html>
 
 		function togglePlanMode() {
 			planModeEnabled = !planModeEnabled;
-			const buttonElement = document.getElementById('planModeBtn');
+			const switchElement = document.getElementById('planModeSwitch');
 			if (planModeEnabled) {
-				buttonElement.classList.add('active');
+				switchElement.classList.add('active');
 			} else {
-				buttonElement.classList.remove('active');
+				switchElement.classList.remove('active');
 			}
 		}
 
 		function toggleThinkingMode() {
 			thinkingModeEnabled = !thinkingModeEnabled;
-			const buttonElement = document.getElementById('thinkingModeBtn');
+			const switchElement = document.getElementById('thinkingModeSwitch');
 			if (thinkingModeEnabled) {
-				buttonElement.classList.add('active');
+				switchElement.classList.add('active');
 			} else {
-				buttonElement.classList.remove('active');
+				switchElement.classList.remove('active');
 			}
 		}
 
