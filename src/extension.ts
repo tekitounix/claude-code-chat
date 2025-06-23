@@ -20,7 +20,7 @@ export function activate(context: vscode.ExtensionContext) {
 	});
 
 	// Register tree data provider for the activity bar view
-	const treeProvider = new ClaudeChatViewProvider(context.extensionUri, context, provider);
+	const treeProvider = new ClaudeChatViewProvider(context.extensionUri, context);
 	vscode.window.registerTreeDataProvider('claude-code-chat.chat', treeProvider);
 
 	// Make tree provider accessible to chat provider for refreshing
@@ -46,8 +46,7 @@ class ClaudeChatViewProvider implements vscode.TreeDataProvider<vscode.TreeItem>
 
 	constructor(
 		private extensionUri: vscode.Uri,
-		private context: vscode.ExtensionContext,
-		private chatProvider: ClaudeChatProvider
+		private context: vscode.ExtensionContext
 	) { }
 
 	refresh(): void {
@@ -679,12 +678,13 @@ class ClaudeChatProvider {
 		const config = vscode.workspace.getConfiguration('claudeCodeChat');
 		const wslEnabled = config.get<boolean>('wsl.enabled', false);
 		const wslDistro = config.get<string>('wsl.distro', 'Ubuntu');
+		const nodePath = config.get<string>('wsl.nodePath', '/usr/bin/node');
 		const claudePath = config.get<string>('wsl.claudePath', '/usr/local/bin/claude');
 
 		// Open terminal and run claude login
 		const terminal = vscode.window.createTerminal('Claude Login');
 		if (wslEnabled) {
-			terminal.sendText(`wsl -d ${wslDistro} ${claudePath}`);
+			terminal.sendText(`wsl -d ${wslDistro} ${nodePath} --no-warnings --enable-source-maps ${claudePath}`);
 		} else {
 			terminal.sendText('claude');
 		}
@@ -1237,9 +1237,10 @@ class ClaudeChatProvider {
 	}
 
 	private _openModelTerminal(): void {
-		const config = vscode.workspace.getConfiguration('claude');
+		const config = vscode.workspace.getConfiguration('claudeCodeChat');
 		const wslEnabled = config.get<boolean>('wsl.enabled', false);
 		const wslDistro = config.get<string>('wsl.distro', 'Ubuntu');
+		const nodePath = config.get<string>('wsl.nodePath', '/usr/bin/node');
 		const claudePath = config.get<string>('wsl.claudePath', '/usr/local/bin/claude');
 
 		// Build command arguments
@@ -1253,7 +1254,7 @@ class ClaudeChatProvider {
 		// Create terminal with the claude /model command
 		const terminal = vscode.window.createTerminal('Claude Model Selection');
 		if (wslEnabled) {
-			terminal.sendText(`wsl -d ${wslDistro} ${claudePath} ${args.join(' ')}`);
+			terminal.sendText(`wsl -d ${wslDistro} ${nodePath} --no-warnings --enable-source-maps ${claudePath} ${args.join(' ')}`);
 		} else {
 			terminal.sendText(`claude ${args.join(' ')}`);
 		}
@@ -1276,6 +1277,7 @@ class ClaudeChatProvider {
 		const config = vscode.workspace.getConfiguration('claudeCodeChat');
 		const wslEnabled = config.get<boolean>('wsl.enabled', false);
 		const wslDistro = config.get<string>('wsl.distro', 'Ubuntu');
+		const nodePath = config.get<string>('wsl.nodePath', '/usr/bin/node');
 		const claudePath = config.get<string>('wsl.claudePath', '/usr/local/bin/claude');
 
 		// Build command arguments
@@ -1289,7 +1291,7 @@ class ClaudeChatProvider {
 		// Create terminal with the claude command
 		const terminal = vscode.window.createTerminal(`Claude /${command}`);
 		if (wslEnabled) {
-			terminal.sendText(`wsl -d ${wslDistro} ${claudePath} ${args.join(' ')}`);
+			terminal.sendText(`wsl -d ${wslDistro} ${nodePath} --no-warnings --enable-source-maps ${claudePath} ${args.join(' ')}`);
 		} else {
 			terminal.sendText(`claude ${args.join(' ')}`);
 		}
