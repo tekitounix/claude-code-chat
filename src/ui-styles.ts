@@ -1063,6 +1063,32 @@ const styles = `
         margin-bottom: 0px;
     }
 
+    .thinking-modal-actions {
+        padding-top: 20px;
+        text-align: right;
+        border-top: 1px solid var(--vscode-widget-border);
+    }
+
+    .confirm-btn {
+        background-color: var(--vscode-button-background);
+        color: var(--vscode-button-foreground);
+        border: 1px solid var(--vscode-panel-border);
+        padding: 6px 12px;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 12px;
+        font-weight: 400;
+        transition: all 0.2s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+    }
+
+    .confirm-btn:hover {
+        background-color: var(--vscode-button-background);
+        border-color: var(--vscode-focusBorder);
+    }
+
     /* Slash commands modal */
     .slash-commands-info {
         padding: 12px 16px;
