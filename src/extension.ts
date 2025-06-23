@@ -26,6 +26,13 @@ export function activate(context: vscode.ExtensionContext) {
 	// Make tree provider accessible to chat provider for refreshing
 	provider.setTreeProvider(treeProvider);
 
+	// Listen for configuration changes
+	const configChangeDisposable = vscode.workspace.onDidChangeConfiguration(event => {
+		if (event.affectsConfiguration('claudeCodeChat.wsl')) {
+			console.log('WSL configuration changed, starting new session');
+			provider.newSessionOnConfigChange();
+		}
+	});
 
 	// Create status bar item
 	const statusBarItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Right, 100);
@@ -34,7 +41,7 @@ export function activate(context: vscode.ExtensionContext) {
 	statusBarItem.command = 'claude-code-chat.openChat';
 	statusBarItem.show();
 
-	context.subscriptions.push(disposable, loadConversationDisposable, statusBarItem);
+	context.subscriptions.push(disposable, loadConversationDisposable, configChangeDisposable, statusBarItem);
 	console.log('Claude Code Chat extension activation completed successfully!');
 }
 
@@ -662,6 +669,23 @@ class ClaudeChatProvider {
 		});
 	}
 
+	public newSessionOnConfigChange() {
+		// Start a new session due to configuration change
+		this._newSession();
+		
+		// Show notification to user
+		vscode.window.showInformationMessage(
+			'WSL configuration changed. Started a new Claude session.',
+			'OK'
+		);
+
+		// Send message to webview about the config change
+		this._sendAndSaveMessage({
+			type: 'configChanged',
+			data: '⚙️ WSL configuration changed. Started a new session.'
+		});
+	}
+
 	private _handleLoginRequired() {
 		// Clear processing state
 		this._panel?.webview.postMessage({
@@ -695,6 +719,12 @@ class ClaudeChatProvider {
 			'Please login to Claude in the terminal, then come back to this chat to continue.',
 			'OK'
 		);
+
+				// Send message to UI about terminal
+		this._panel?.webview.postMessage({
+			type: 'terminalOpened',
+			data: `Please login to Claude in the terminal, then come back to this chat to continue.`,
+		});
 	}
 
 	private async _initializeBackupRepo(): Promise<void> {
