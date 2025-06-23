@@ -1052,6 +1052,17 @@ const styles = `
     }
 
 
+    /* Thinking intensity modal */
+    .thinking-modal-description {
+        padding: 0px 20px;
+        font-size: 12px;
+        color: var(--vscode-descriptionForeground);
+        line-height: 1.5;
+        text-align: center;
+        margin: 20px;
+        margin-bottom: 0px;
+    }
+
     /* Slash commands modal */
     .slash-commands-info {
         padding: 12px 16px;

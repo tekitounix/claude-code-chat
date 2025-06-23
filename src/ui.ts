@@ -195,25 +195,7 @@ const html = `<!DOCTYPE html>
 				<button class="tools-close-btn" onclick="hideSettingsModal()">✕</button>
 			</div>
 			<div class="tools-list">
-				<h3 style="margin-top: 0; margin-bottom: 16px; font-size: 14px; font-weight: 600;">Thinking Mode Configuration</h3>
-								<div class="settings-group">
-				<div>
-					<p style="font-size: 11px; color: var(--vscode-descriptionForeground); margin: 0;">
-						Configure the intensity of thinking mode. Higher levels provide more detailed reasoning but consume more tokens.
-					</p>
-				</div>
-				<div class="thinking-slider-container">
-					<input type="range" min="0" max="3" value="0" step="1" class="thinking-slider" id="thinkingSlider" oninput="updateThinkingIntensity(this.value)" onchange="updateSettings()">
-					<div class="slider-labels">
-						<div class="slider-label active" id="label-0" onclick="setThinkingIntensity(0)">Think</div>
-						<div class="slider-label" id="label-1" onclick="setThinkingIntensity(1)">Think Hard</div>
-						<div class="slider-label" id="label-2" onclick="setThinkingIntensity(2)">Think Harder</div>
-						<div class="slider-label" id="label-3" onclick="setThinkingIntensity(3)">Ultrathink</div>
-					</div>
-				</div>
-				</div>
-
-				<h3 style="margin-top: 24px; margin-bottom: 16px; font-size: 14px; font-weight: 600;">WSL Configuration</h3>
+				<h3 style="margin-top: 0; margin-bottom: 16px; font-size: 14px; font-weight: 600;">WSL Configuration</h3>
 				<div>
 					<p style="font-size: 11px; color: var(--vscode-descriptionForeground); margin: 0;">
 						WSL integration allows you to run Claude Code from within Windows Subsystem for Linux.
@@ -322,6 +304,30 @@ const html = `<!DOCTYPE html>
 							Configure
 						</button>
 					</label>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<!-- Thinking intensity modal -->
+	<div id="thinkingIntensityModal" class="tools-modal" style="display: none;">
+		<div class="tools-modal-content" style="width: 450px;">
+			<div class="tools-modal-header">
+				<span>Thinking Mode Intensity</span>
+				<button class="tools-close-btn" onclick="hideThinkingIntensityModal()">✕</button>
+			</div>
+			<div class="thinking-modal-description">
+				Configure the intensity of thinking mode. Higher levels provide more detailed reasoning but consume more tokens.
+			</div>
+			<div class="tools-list">
+				<div class="thinking-slider-container">
+					<input type="range" min="0" max="3" value="0" step="1" class="thinking-slider" id="thinkingIntensitySlider" oninput="updateThinkingIntensityDisplay(this.value)" onchange="saveThinkingIntensity()">
+					<div class="slider-labels">
+						<div class="slider-label active" id="thinking-label-0" onclick="setThinkingIntensityValue(0)">Think</div>
+						<div class="slider-label" id="thinking-label-1" onclick="setThinkingIntensityValue(1)">Think Hard</div>
+						<div class="slider-label" id="thinking-label-2" onclick="setThinkingIntensityValue(2)">Think Harder</div>
+						<div class="slider-label" id="thinking-label-3" onclick="setThinkingIntensityValue(3)">Ultrathink</div>
+					</div>
 				</div>
 			</div>
 		</div>
@@ -794,6 +800,8 @@ const html = `<!DOCTYPE html>
 			const switchElement = document.getElementById('thinkingModeSwitch');
 			if (thinkingModeEnabled) {
 				switchElement.classList.add('active');
+				// Show thinking intensity modal when thinking mode is enabled
+				showThinkingIntensityModal();
 			} else {
 				switchElement.classList.remove('active');
 			}
@@ -1047,6 +1055,56 @@ const html = `<!DOCTYPE html>
 
 		function hideSlashCommandsModal() {
 			document.getElementById('slashCommandsModal').style.display = 'none';
+		}
+
+		// Thinking intensity modal functions
+		function showThinkingIntensityModal() {
+			// Request current settings from VS Code first
+			vscode.postMessage({
+				type: 'getSettings'
+			});
+			document.getElementById('thinkingIntensityModal').style.display = 'flex';
+		}
+
+		function hideThinkingIntensityModal() {
+			document.getElementById('thinkingIntensityModal').style.display = 'none';
+		}
+
+		function saveThinkingIntensity() {
+			const thinkingSlider = document.getElementById('thinkingIntensitySlider');
+			const intensityValues = ['think', 'think-hard', 'think-harder', 'ultrathink'];
+			const thinkingIntensity = intensityValues[thinkingSlider.value] || 'think';
+			
+			// Send settings to VS Code
+			vscode.postMessage({
+				type: 'updateSettings',
+				settings: {
+					'thinking.intensity': thinkingIntensity
+				}
+			});
+		}
+
+		function updateThinkingIntensityDisplay(value) {
+			// Update label highlighting for thinking intensity modal
+			for (let i = 0; i < 4; i++) {
+				const label = document.getElementById('thinking-label-' + i);
+				if (i == value) {
+					label.classList.add('active');
+				} else {
+					label.classList.remove('active');
+				}
+			}
+		}
+
+		function setThinkingIntensityValue(value) {
+			// Set slider value for thinking intensity modal
+			document.getElementById('thinkingIntensitySlider').value = value;
+			
+			// Update visual state
+			updateThinkingIntensityDisplay(value);
+			
+			// Save settings
+			saveThinkingIntensity();
 		}
 
 		function executeSlashCommand(command) {
@@ -1812,33 +1870,8 @@ const html = `<!DOCTYPE html>
 			document.getElementById('settingsModal').style.display = 'none';
 		}
 
-		function updateThinkingIntensity(value) {
-			// Update label highlighting
-			for (let i = 0; i < 4; i++) {
-				const label = document.getElementById('label-' + i);
-				if (i == value) {
-					label.classList.add('active');
-				} else {
-					label.classList.remove('active');
-				}
-			}
-		}
-
-		function setThinkingIntensity(value) {
-			// Set slider value
-			document.getElementById('thinkingSlider').value = value;
-			
-			// Update visual state
-			updateThinkingIntensity(value);
-			
-			// Save settings
-			updateSettings();
-		}
-
 		function updateSettings() {
-			const thinkingSlider = document.getElementById('thinkingSlider');
-			const intensityValues = ['think', 'think-hard', 'think-harder', 'ultrathink'];
-			const thinkingIntensity = intensityValues[thinkingSlider.value] || 'think';
+			// Note: thinking intensity is now handled separately in the thinking intensity modal
 			
 			const wslEnabled = document.getElementById('wsl-enabled').checked;
 			const wslDistro = document.getElementById('wsl-distro').value;
@@ -1852,7 +1885,6 @@ const html = `<!DOCTYPE html>
 			vscode.postMessage({
 				type: 'updateSettings',
 				settings: {
-					'thinking.intensity': thinkingIntensity,
 					'wsl.enabled': wslEnabled,
 					'wsl.distro': wslDistro || 'Ubuntu',
 					'wsl.nodePath': wslNodePath || '/usr/bin/node',
@@ -1866,6 +1898,13 @@ const html = `<!DOCTYPE html>
 		document.getElementById('settingsModal').addEventListener('click', (e) => {
 			if (e.target === document.getElementById('settingsModal')) {
 				hideSettingsModal();
+			}
+		});
+
+		// Close thinking intensity modal when clicking outside
+		document.getElementById('thinkingIntensityModal').addEventListener('click', (e) => {
+			if (e.target === document.getElementById('thinkingIntensityModal')) {
+				hideThinkingIntensityModal();
 			}
 		});
 
@@ -1896,10 +1935,11 @@ const html = `<!DOCTYPE html>
 				const intensityValues = ['think', 'think-hard', 'think-harder', 'ultrathink'];
 				const sliderValue = intensityValues.indexOf(thinkingIntensity);
 				
-				const thinkingSlider = document.getElementById('thinkingSlider');
-				if (thinkingSlider) {
-					thinkingSlider.value = sliderValue >= 0 ? sliderValue : 0;
-					updateThinkingIntensity(thinkingSlider.value);
+				// Update thinking intensity modal if it exists
+				const thinkingIntensitySlider = document.getElementById('thinkingIntensitySlider');
+				if (thinkingIntensitySlider) {
+					thinkingIntensitySlider.value = sliderValue >= 0 ? sliderValue : 0;
+					updateThinkingIntensityDisplay(thinkingIntensitySlider.value);
 				}
 				
 				document.getElementById('wsl-enabled').checked = message.data['wsl.enabled'] || false;
