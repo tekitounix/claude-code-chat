@@ -44,7 +44,7 @@ const html = `<!DOCTYPE html>
 					<div class="mode-switch" id="planModeSwitch" onclick="togglePlanMode()"></div>
 				</div>
 				<div class="mode-toggle">
-					<span onclick="toggleThinkingMode()">Thinking Mode</span>
+					<span id="thinkingModeLabel" onclick="toggleThinkingMode()">Thinking Mode</span>
 					<div class="mode-switch" id="thinkingModeSwitch" onclick="toggleThinkingMode()"></div>
 				</div>
 			</div>
@@ -798,12 +798,17 @@ const html = `<!DOCTYPE html>
 		function toggleThinkingMode() {
 			thinkingModeEnabled = !thinkingModeEnabled;
 			const switchElement = document.getElementById('thinkingModeSwitch');
+			const toggleLabel = document.getElementById('thinkingModeLabel');
 			if (thinkingModeEnabled) {
 				switchElement.classList.add('active');
 				// Show thinking intensity modal when thinking mode is enabled
 				showThinkingIntensityModal();
 			} else {
 				switchElement.classList.remove('active');
+				// Reset to default "Thinking Mode" when turned off
+				if (toggleLabel) {
+					toggleLabel.textContent = 'Thinking Mode';
+				}
 			}
 		}
 
@@ -1084,6 +1089,15 @@ const html = `<!DOCTYPE html>
 			});
 		}
 
+		function updateThinkingModeToggleName(intensityValue) {
+			const intensityNames = ['Thinking', 'Think Hard', 'Think Harder', 'Ultrathink'];
+			const modeName = intensityNames[intensityValue] || 'Thinking';
+			const toggleLabel = document.getElementById('thinkingModeLabel');
+			if (toggleLabel) {
+				toggleLabel.textContent = modeName + ' Mode';
+			}
+		}
+
 		function updateThinkingIntensityDisplay(value) {
 			// Update label highlighting for thinking intensity modal
 			for (let i = 0; i < 4; i++) {
@@ -1094,6 +1108,9 @@ const html = `<!DOCTYPE html>
 					label.classList.remove('active');
 				}
 			}
+			
+			// Update the toggle name
+			updateThinkingModeToggleName(value);
 		}
 
 		function setThinkingIntensityValue(value) {
@@ -1940,6 +1957,9 @@ const html = `<!DOCTYPE html>
 				if (thinkingIntensitySlider) {
 					thinkingIntensitySlider.value = sliderValue >= 0 ? sliderValue : 0;
 					updateThinkingIntensityDisplay(thinkingIntensitySlider.value);
+				} else {
+					// Update toggle name even if modal isn't open
+					updateThinkingModeToggleName(sliderValue >= 0 ? sliderValue : 0);
 				}
 				
 				document.getElementById('wsl-enabled').checked = message.data['wsl.enabled'] || false;
