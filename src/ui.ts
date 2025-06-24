@@ -700,35 +700,6 @@ const html = `<!DOCTYPE html>
 			}
 		}
 
-		function toggleExpand(element) {
-			try {
-				const value = element.getAttribute('data-value');
-				
-				if (element.classList.contains('expanded')) {
-					// Collapse
-					element.textContent = 'expand';
-					element.classList.remove('expanded');
-					
-					const expandedContent = element.parentNode.querySelector('.expanded-content');
-					if (expandedContent) {
-						expandedContent.remove();
-					}
-				} else {
-					// Expand
-					element.textContent = 'collapse';
-					element.classList.add('expanded');
-					
-					const expandedDiv = document.createElement('div');
-					expandedDiv.className = 'expanded-content';
-					const preElement = document.createElement('pre');
-					preElement.textContent = value;
-					expandedDiv.appendChild(preElement);
-					element.parentNode.appendChild(expandedDiv);
-				}
-			} catch (error) {
-				console.error('Error toggling expand:', error);
-			}
-		}
 
 		function addToolResultMessage(data) {
 			// For Read and Edit tools with hidden flag, just hide loading state and show completion message
@@ -779,11 +750,25 @@ const html = `<!DOCTYPE html>
 			// Check if it's a tool result and truncate appropriately
 			let content = data.content;
 			if (content.length > 200 && !data.isError) {
-				const truncated = content.substring(0, 197) + '...';
-				const escapedValue = content.replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+				const truncateAt = 197;
+				const truncated = content.substring(0, truncateAt);
+				const resultId = 'result_' + Math.random().toString(36).substr(2, 9);
+				
 				const preElement = document.createElement('pre');
-				preElement.innerHTML = truncated + ' <span class="expand-btn" data-value="' + escapedValue + '" onclick="toggleExpand(this)">expand</span>';
+				preElement.innerHTML = '<span id="' + resultId + '_visible">' + escapeHtml(truncated) + '</span>' +
+									   '<span id="' + resultId + '_ellipsis">...</span>' +
+									   '<span id="' + resultId + '_hidden" style="display: none;">' + escapeHtml(content.substring(truncateAt)) + '</span>';
 				contentDiv.appendChild(preElement);
+				
+				// Add expand button container
+				const expandContainer = document.createElement('div');
+				expandContainer.className = 'diff-expand-container';
+				const expandButton = document.createElement('button');
+				expandButton.className = 'diff-expand-btn';
+				expandButton.textContent = 'Show more';
+				expandButton.setAttribute('onclick', 'toggleResultExpansion(\\'' + resultId + '\\\')');
+				expandContainer.appendChild(expandButton);
+				contentDiv.appendChild(expandContainer);
 			} else {
 				const preElement = document.createElement('pre');
 				preElement.textContent = content;
@@ -799,7 +784,16 @@ const html = `<!DOCTYPE html>
 			if (!input || typeof input !== 'object') {
 				const str = String(input);
 				if (str.length > 100) {
-					return str.substring(0, 97) + '... <span class="expand-btn" data-value="' + str.replace(/"/g, '&quot;').replace(/'/g, '&#39;') + '" onclick="toggleExpand(this)">expand</span>';
+					const truncateAt = 97;
+					const truncated = str.substring(0, truncateAt);
+					const inputId = 'input_' + Math.random().toString(36).substr(2, 9);
+					
+					return '<span id="' + inputId + '_visible">' + escapeHtml(truncated) + '</span>' +
+						   '<span id="' + inputId + '_ellipsis">...</span>' +
+						   '<span id="' + inputId + '_hidden" style="display: none;">' + escapeHtml(str.substring(truncateAt)) + '</span>' +
+						   '<div class="diff-expand-container">' +
+						   '<button class="diff-expand-btn" onclick="toggleResultExpansion(\\\'' + inputId + '\\\')">Show more</button>' +
+						   '</div>';
 				}
 				return str;
 			}
@@ -1114,6 +1108,24 @@ const html = `<!DOCTYPE html>
 					hiddenDiv.style.display = 'none';
 					const hiddenLines = hiddenDiv.querySelectorAll('.diff-line').length;
 					button.textContent = 'Show ' + hiddenLines + ' more lines';
+				}
+			}
+		}
+
+		function toggleResultExpansion(resultId) {
+			const hiddenDiv = document.getElementById(resultId + '_hidden');
+			const ellipsis = document.getElementById(resultId + '_ellipsis');
+			const button = document.querySelector('[onclick*="toggleResultExpansion(\\'' + resultId + '\\\')"]');
+			
+			if (hiddenDiv && button) {
+				if (hiddenDiv.style.display === 'none') {
+					hiddenDiv.style.display = 'inline';
+					if (ellipsis) ellipsis.style.display = 'none';
+					button.textContent = 'Show less';
+				} else {
+					hiddenDiv.style.display = 'none';
+					if (ellipsis) ellipsis.style.display = 'inline';
+					button.textContent = 'Show more';
 				}
 			}
 		}
