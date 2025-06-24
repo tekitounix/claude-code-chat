@@ -4,6 +4,48 @@ All notable changes to the "claude-code-chat" extension will be documented in th
 
 Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
 
+## [0.1.3] - 2025-06-24
+
+### 🚀 Features Added
+
+#### **MultiEdit and Edit Tool Diff Display**
+- Added comprehensive diff visualization for MultiEdit tool operations
+- Shows file path with click-to-open functionality
+- Displays multiple edits with numbered labels (Edit #1, Edit #2, etc.)
+- Smart truncation handling - shows complete edits within line limits
+- Expandable interface with "Show X more edits" button
+- Visual separators between individual edits
+- Consistent styling with existing Edit tool diff display
+
+#### **Enhanced Tool Result Management**
+- Added MultiEdit to hidden tool results list for cleaner interface
+- Tool results for Read, Edit, TodoWrite, and MultiEdit now show loading states instead of uninteresting success messages
+- Improved user experience by hiding redundant "Tool executed successfully" messages
+
+### 🎨 UI/UX Improvements
+
+#### **Thinking Intensity Modal Enhancement**
+- Fixed bug where thinking mode toggle text changed before user confirmation
+- Toggle text now only updates when user clicks "Confirm" button
+- Preview selection highlighting still works during option exploration
+- Improved user experience with proper confirmation workflow
+
+#### **Consistent Message Spacing**
+- Standardized spacing between tool messages and user/Claude messages
+- Updated tool input padding from 12px to 8px to match message spacing
+- Unified visual consistency across all message types
+
+#### **Refined Visual Design**
+- Changed MultiEdit edit number labels from purple to subtle professional styling
+- Used VS Code theme colors for better integration
+- Improved overall visual cohesion with more sober color palette
+
+### 🔧 Technical Improvements
+- Enhanced tool message formatting infrastructure
+- Improved diff rendering performance for multiple edits
+- Better error handling for malformed MultiEdit tool inputs
+- Optimized truncation logic for complex multi-edit operations
+
 ## [0.1.2] - 2025-06-20
 
 ### 🐛 Bug Fixes
