@@ -83,6 +83,74 @@ const styles = `
         opacity: 1;
     }
 
+    /* WSL Alert */
+    .wsl-alert {
+        margin: 8px 12px;
+        background-color: rgba(135, 206, 235, 0.1);
+        border: 2px solid rgba(135, 206, 235, 0.3);
+        border-radius: 8px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        backdrop-filter: blur(4px);
+        animation: slideUp 0.3s ease;
+    }
+
+    @keyframes slideUp {
+        from {
+            opacity: 0;
+            transform: translateY(10px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .wsl-alert-content {
+        display: flex;
+        align-items: center;
+        padding: 14px 18px;
+        gap: 14px;
+    }
+
+    .wsl-alert-icon {
+        font-size: 22px;
+        flex-shrink: 0;
+    }
+
+    .wsl-alert-text {
+        flex: 1;
+        font-size: 13px;
+        line-height: 1.4;
+        color: var(--vscode-foreground);
+    }
+
+    .wsl-alert-text strong {
+        font-weight: 600;
+        color: var(--vscode-foreground);
+    }
+
+    .wsl-alert-actions {
+        display: flex;
+        gap: 10px;
+        flex-shrink: 0;
+    }
+
+    .wsl-alert-actions .btn {
+        padding: 6px 14px;
+        font-size: 12px;
+        border-radius: 6px;
+    }
+
+    .wsl-alert-actions .btn:first-child {
+        background-color: rgba(135, 206, 235, 0.2);
+        border-color: rgba(135, 206, 235, 0.4);
+    }
+
+    .wsl-alert-actions .btn:first-child:hover {
+        background-color: rgba(135, 206, 235, 0.3);
+        border-color: rgba(135, 206, 235, 0.6);
+    }
+
     .chat-container {
         flex: 1;
         display: flex;

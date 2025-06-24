@@ -37,6 +37,22 @@ const html = `<!DOCTYPE html>
 
 	<div class="chat-container" id="chatContainer">
 		<div class="messages" id="messages"></div>
+		
+		<!-- WSL Alert for Windows users -->
+		<div id="wslAlert" class="wsl-alert" style="display: none;">
+			<div class="wsl-alert-content">
+				<div class="wsl-alert-icon">💻</div>
+				<div class="wsl-alert-text">
+					<strong>Looks like you are using Windows!</strong><br/>
+					If you are using WSL to run Claude Code, you should enable WSL integration in the settings.
+				</div>
+				<div class="wsl-alert-actions">
+					<button class="btn" onclick="openWSLSettings()">Enable WSL</button>
+					<button class="btn outlined" onclick="dismissWSLAlert()">Dismiss</button>
+				</div>
+			</div>
+		</div>
+		
 		<div class="input-container" id="inputContainer">
 			<div class="input-modes">
 				<div class="mode-toggle">
@@ -1132,6 +1148,33 @@ const html = `<!DOCTYPE html>
 			hideThinkingIntensityModal();
 		}
 
+		// WSL Alert functions
+		function showWSLAlert() {
+			const alert = document.getElementById('wslAlert');
+			if (alert) {
+				alert.style.display = 'block';
+			}
+		}
+
+		function dismissWSLAlert() {
+			const alert = document.getElementById('wslAlert');
+			if (alert) {
+				alert.style.display = 'none';
+			}
+			// Send dismiss message to extension to store in globalState
+			vscode.postMessage({
+				type: 'dismissWSLAlert'
+			});
+		}
+
+		function openWSLSettings() {
+			// Dismiss the alert
+			dismissWSLAlert();
+			
+			// Open settings modal
+			toggleSettings();
+		}
+
 		function executeSlashCommand(command) {
 			// Hide the modal
 			hideSlashCommandsModal();
@@ -1977,6 +2020,16 @@ const html = `<!DOCTYPE html>
 				
 				// Show/hide WSL options
 				document.getElementById('wslOptions').style.display = message.data['wsl.enabled'] ? 'block' : 'none';
+			}
+
+			if (message.type === 'platformInfo') {
+				// Check if user is on Windows and show WSL alert if not dismissed and WSL not already enabled
+				if (message.data.isWindows && !message.data.wslAlertDismissed && !message.data.wslEnabled) {
+					// Small delay to ensure UI is ready
+					setTimeout(() => {
+						showWSLAlert();
+					}, 1000);
+				}
 			}
 		});
 

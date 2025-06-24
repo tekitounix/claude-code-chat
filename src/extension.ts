@@ -228,6 +228,9 @@ class ClaudeChatProvider {
 					case 'executeSlashCommand':
 						this._executeSlashCommand(message.command);
 						return;
+					case 'dismissWSLAlert':
+						this._dismissWSLAlert();
+						return;
 				}
 			},
 			null,
@@ -265,6 +268,10 @@ class ClaudeChatProvider {
 				type: 'modelSelected',
 				model: this._selectedModel
 			});
+
+
+			// Send platform information to webview
+			this._sendPlatformInfo();
 		}, 100);
 	}
 
@@ -917,6 +924,7 @@ class ClaudeChatProvider {
 
 	private async _saveCurrentConversation(): Promise<void> {
 		if (!this._conversationsPath || this._currentConversation.length === 0) {return;}
+		if(!this._currentSessionId) {return;}
 
 		try {
 			// Create filename from first user message and timestamp
@@ -1338,6 +1346,29 @@ class ClaudeChatProvider {
 			type: 'terminalOpened',
 			data: `Executing /${command} command in terminal. Check the terminal output and return when ready.`,
 		});
+	}
+
+	private _sendPlatformInfo() {
+		const platform = process.platform;
+		const dismissed = this._context.globalState.get<boolean>('wslAlertDismissed', false);
+		
+		// Get WSL configuration
+		const config = vscode.workspace.getConfiguration('claudeCodeChat');
+		const wslEnabled = config.get<boolean>('wsl.enabled', false);
+
+		this._panel?.webview.postMessage({
+			type: 'platformInfo',
+			data: {
+				platform: platform,
+				isWindows: platform === 'win32',
+				wslAlertDismissed: dismissed,
+				wslEnabled: wslEnabled
+			}
+		});
+	}
+
+	private _dismissWSLAlert() {
+		this._context.globalState.update('wslAlertDismissed', true);
 	}
 
 	public dispose() {
