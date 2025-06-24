@@ -336,7 +336,7 @@ class ClaudeChatProvider {
 		// Show loading indicator
 		this._panel?.webview.postMessage({
 			type: 'loading',
-			data: 'Claude is thinking...'
+			data: 'Claude is working...'
 		});
 
 		// Call claude with the message via stdin using stream-json format
