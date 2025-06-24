@@ -1392,8 +1392,7 @@ const html = `<!DOCTYPE html>
 				}
 			}
 			
-			// Update the toggle name
-			updateThinkingModeToggleName(value);
+			// Don't update toggle name until user confirms
 		}
 
 		function setThinkingIntensityValue(value) {
@@ -1405,6 +1404,12 @@ const html = `<!DOCTYPE html>
 		}
 
 		function confirmThinkingIntensity() {
+			// Get the current slider value
+			const currentValue = document.getElementById('thinkingIntensitySlider').value;
+			
+			// Update the toggle name with confirmed selection
+			updateThinkingModeToggleName(currentValue);
+			
 			// Save the current intensity setting
 			saveThinkingIntensity();
 			
