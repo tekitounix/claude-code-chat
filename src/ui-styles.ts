@@ -540,6 +540,17 @@ const styles = `
         border: 1px solid var(--vscode-panel-border);
         border-radius: 4px;
         font-size: 12px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+
+    .diff-file-path:hover {
+        background-color: var(--vscode-list-hoverBackground);
+        border-color: var(--vscode-focusBorder);
+    }
+
+    .diff-file-path:active {
+        transform: translateY(1px);
     }
 
     .file-path-short,

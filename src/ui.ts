@@ -803,7 +803,7 @@ const html = `<!DOCTYPE html>
 			// Special handling for Read tool with file_path
 			if (input.file_path && Object.keys(input).length === 1) {
 				const formattedPath = formatFilePath(input.file_path);
-				return '<div class="diff-file-path">' + formattedPath + '</div>';
+				return '<div class="diff-file-path" onclick="openFileInEditor(\\\'' + escapeHtml(input.file_path) + '\\\')">' + formattedPath + '</div>';
 			}
 
 			let result = '';
@@ -817,7 +817,7 @@ const html = `<!DOCTYPE html>
 				// Special formatting for file_path in Read tool context
 				if (key === 'file_path') {
 					const formattedPath = formatFilePath(valueStr);
-					result += '<div class="diff-file-path">' + formattedPath + '</div>';
+					result += '<div class="diff-file-path" onclick="openFileInEditor(\\\'' + escapeHtml(valueStr) + '\\\')">' + formattedPath + '</div>';
 				} else if (valueStr.length > 100) {
 					const truncated = valueStr.substring(0, 97) + '...';
 					const escapedValue = valueStr.replace(/"/g, '&quot;').replace(/'/g, '&#39;');
@@ -841,7 +841,7 @@ const html = `<!DOCTYPE html>
 
 			// Format file path with better display
 			const formattedPath = formatFilePath(input.file_path);
-			let result = '<div class="diff-file-path">' + formattedPath + '</div>\\n';
+			let result = '<div class="diff-file-path" onclick="openFileInEditor(\\\'' + escapeHtml(input.file_path) + '\\\')">' + formattedPath + '</div>\\n';
 			
 			// Create diff view
 			const oldLines = input.old_string.split('\\n');
@@ -918,7 +918,7 @@ const html = `<!DOCTYPE html>
 			const parts = filePath.split('/');
 			const fileName = parts[parts.length - 1];
 			
-			return '<span class="file-path-truncated" title="' + escapeHtml(filePath) + '" onclick="openFileInEditor(\\\'' + escapeHtml(filePath) + '\\\')">' + 
+			return '<span class="file-path-truncated" title="' + escapeHtml(filePath) + '" data-file-path="' + escapeHtml(filePath) + '">' + 
 				   '<span class="file-icon">📄</span>' + escapeHtml(fileName) + '</span>';
 		}
 
