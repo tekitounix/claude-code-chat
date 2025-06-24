@@ -534,6 +534,31 @@ const styles = `
         transform: translateY(1px);
     }
 
+    /* MultiEdit specific styles */
+    .single-edit {
+        margin-bottom: 12px;
+    }
+
+    .edit-number {
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        color: var(--vscode-descriptionForeground);
+        padding: 4px 8px;
+        border-radius: 4px;
+        font-size: 11px;
+        font-weight: 600;
+        margin-top: 6px;
+        display: inline-block;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .diff-edit-separator {
+        height: 1px;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+        margin: 12px 0;
+    }
+
     /* File path display styles */
     .diff-file-path {
         padding: 8px 12px;

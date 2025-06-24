@@ -640,9 +640,11 @@ const html = `<!DOCTYPE html>
 					contentDiv.innerHTML = todoHtml;
 				} else {
 					// Format raw input with expandable content for long values
-					// Use diff format for Edit tool, regular format for others
+					// Use diff format for Edit and MultiEdit tools, regular format for others
 					if (data.toolName === 'Edit') {
 						contentDiv.innerHTML = formatEditToolDiff(data.rawInput);
+					} else if (data.toolName === 'MultiEdit') {
+						contentDiv.innerHTML = formatMultiEditToolDiff(data.rawInput);
 					} else {
 						contentDiv.innerHTML = formatToolInputUI(data.rawInput);
 					}
@@ -728,7 +730,7 @@ const html = `<!DOCTYPE html>
 
 		function addToolResultMessage(data) {
 			// For Read and Edit tools with hidden flag, just hide loading state and show completion message
-			if (data.hidden && (data.toolName === 'Read' || data.toolName === 'Edit' || data.toolName === 'TodoWrite') && !data.isError) {				
+			if (data.hidden && (data.toolName === 'Read' || data.toolName === 'Edit' || data.toolName === 'TodoWrite' || data.toolName === 'MultiEdit') && !data.isError) {				
 				return	
 				// Show completion message
 				const toolName = data.toolName;
@@ -895,6 +897,120 @@ const html = `<!DOCTYPE html>
 				}
 			}
 			
+			return result;
+		}
+
+		function formatMultiEditToolDiff(input) {
+			if (!input || typeof input !== 'object') {
+				return formatToolInputUI(input);
+			}
+
+			// Check if this is a MultiEdit tool (has file_path and edits array)
+			if (!input.file_path || !input.edits || !Array.isArray(input.edits)) {
+				return formatToolInputUI(input);
+			}
+
+			// Format file path with better display
+			const formattedPath = formatFilePath(input.file_path);
+			let result = '<div class="diff-file-path" onclick="openFileInEditor(\\\'' + escapeHtml(input.file_path) + '\\\')">' + formattedPath + '</div>\\n';
+			
+			// Count total lines across all edits for truncation
+			let totalLines = 0;
+			for (const edit of input.edits) {
+				if (edit.old_string && edit.new_string) {
+					const oldLines = edit.old_string.split('\\n');
+					const newLines = edit.new_string.split('\\n');
+					totalLines += oldLines.length + newLines.length;
+				}
+			}
+
+			const maxLines = 6;
+			const shouldTruncate = totalLines > maxLines;
+			
+			result += '<div class="diff-container">';
+			result += '<div class="diff-header">Changes (' + input.edits.length + ' edit' + (input.edits.length > 1 ? 's' : '') + '):</div>';
+			
+			// Create a unique ID for this diff
+			const diffId = 'multiedit_' + Math.random().toString(36).substr(2, 9);
+			
+			let currentLineCount = 0;
+			let visibleEdits = [];
+			let hiddenEdits = [];
+			
+			// Determine which edits to show/hide based on line count
+			for (let i = 0; i < input.edits.length; i++) {
+				const edit = input.edits[i];
+				if (!edit.old_string || !edit.new_string) continue;
+				
+				const oldLines = edit.old_string.split('\\n');
+				const newLines = edit.new_string.split('\\n');
+				const editLines = oldLines.length + newLines.length;
+				
+				if (shouldTruncate && currentLineCount + editLines > maxLines && visibleEdits.length > 0) {
+					hiddenEdits.push(edit);
+				} else {
+					visibleEdits.push(edit);
+					currentLineCount += editLines;
+				}
+			}
+			
+			// Show visible edits
+			result += '<div id="' + diffId + '_visible">';
+			for (let i = 0; i < visibleEdits.length; i++) {
+				const edit = visibleEdits[i];
+				if (i > 0) result += '<div class="diff-edit-separator"></div>';
+				result += formatSingleEdit(edit, i + 1);
+			}
+			result += '</div>';
+			
+			// Show hidden edits (initially hidden)
+			if (hiddenEdits.length > 0) {
+				result += '<div id="' + diffId + '_hidden" style="display: none;">';
+				for (let i = 0; i < hiddenEdits.length; i++) {
+					const edit = hiddenEdits[i];
+					result += '<div class="diff-edit-separator"></div>';
+					result += formatSingleEdit(edit, visibleEdits.length + i + 1);
+				}
+				result += '</div>';
+				
+				// Add expand button
+				result += '<div class="diff-expand-container">';
+				result += '<button class="diff-expand-btn" onclick="toggleDiffExpansion(\\\'' + diffId + '\\\')">Show ' + hiddenEdits.length + ' more edit' + (hiddenEdits.length > 1 ? 's' : '') + '</button>';
+				result += '</div>';
+			}
+			
+			result += '</div>';
+			
+			// Add other properties if they exist
+			for (const [key, value] of Object.entries(input)) {
+				if (key !== 'file_path' && key !== 'edits') {
+					const valueStr = typeof value === 'string' ? value : JSON.stringify(value, null, 2);
+					result += '\\n<strong>' + key + ':</strong> ' + valueStr;
+				}
+			}
+			
+			return result;
+		}
+
+		function formatSingleEdit(edit, editNumber) {
+			let result = '<div class="single-edit">';
+			result += '<div class="edit-number">Edit #' + editNumber + '</div>';
+			
+			// Create diff view for this single edit
+			const oldLines = edit.old_string.split('\\n');
+			const newLines = edit.new_string.split('\\n');
+			
+			// Show removed lines
+			for (const line of oldLines) {
+				result += '<div class="diff-line removed">- ' + escapeHtml(line) + '</div>';
+			}
+			
+			// Show added lines
+			for (const line of newLines) {
+				result += '<div class="diff-line added">+ ' + escapeHtml(line) + '</div>';
+			}
+			
+			result += '</div>';
 			return result;
 		}
 

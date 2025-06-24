@@ -580,7 +580,7 @@ class ClaudeChatProvider {
 							const toolName = lastToolUse?.data?.toolName;
 
 							// Don't send tool result for Read and Edit tools unless there's an error
-							if ((toolName === 'Read' || toolName === 'Edit' || toolName === 'TodoWrite') && !isError) {
+							if ((toolName === 'Read' || toolName === 'Edit' || toolName === 'TodoWrite' || toolName === 'MultiEdit') && !isError) {
 								// Still send to UI to hide loading state, but mark it as hidden
 								this._sendAndSaveMessage({
 									type: 'toolResult',
