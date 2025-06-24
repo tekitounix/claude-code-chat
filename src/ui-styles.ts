@@ -1646,6 +1646,71 @@ const styles = `
         color: var(--vscode-descriptionForeground);
         opacity: 0.8;
     }
+
+    /* Tool loading animation */
+    .tool-loading {
+        padding: 16px 12px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        background-color: var(--vscode-panel-background);
+        border-top: 1px solid var(--vscode-panel-border);
+    }
+
+    .loading-spinner {
+        display: flex;
+        gap: 4px;
+    }
+
+    .loading-ball {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background-color: var(--vscode-button-background);
+        animation: bounce 1.4s ease-in-out infinite both;
+    }
+
+    .loading-ball:nth-child(1) { animation-delay: -0.32s; }
+    .loading-ball:nth-child(2) { animation-delay: -0.16s; }
+    .loading-ball:nth-child(3) { animation-delay: 0s; }
+
+    @keyframes bounce {
+        0%, 80%, 100% {
+            transform: scale(0.6);
+            opacity: 0.5;
+        }
+        40% {
+            transform: scale(1);
+            opacity: 1;
+        }
+    }
+
+    .loading-text {
+        font-size: 12px;
+        color: var(--vscode-descriptionForeground);
+        font-style: italic;
+    }
+
+    /* Tool completion indicator */
+    .tool-completion {
+        padding: 8px 12px;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        background-color: rgba(76, 175, 80, 0.1);
+        border-top: 1px solid rgba(76, 175, 80, 0.2);
+        font-size: 12px;
+    }
+
+    .completion-icon {
+        color: #4caf50;
+        font-weight: bold;
+    }
+
+    .completion-text {
+        color: var(--vscode-foreground);
+        opacity: 0.8;
+    }
 </style>`
 
 export default styles

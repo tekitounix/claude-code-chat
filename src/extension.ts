@@ -574,15 +574,36 @@ class ClaudeChatProvider {
 							let resultContent = content.content || 'Tool executed successfully';
 							const isError = content.is_error || false;
 
-							// Show tool result and save to conversation
-							this._sendAndSaveMessage({
-								type: 'toolResult',
-								data: {
-									content: resultContent,
-									isError: isError,
-									toolUseId: content.tool_use_id
-								}
-							});
+							// Find the last tool use to get the tool name
+							const lastToolUse = this._currentConversation[this._currentConversation.length-1]
+
+							const toolName = lastToolUse?.data?.toolName;
+
+							// Don't send tool result for Read and Edit tools unless there's an error
+							if ((toolName === 'Read' || toolName === 'Edit') && !isError) {
+								// Still send to UI to hide loading state, but mark it as hidden
+								this._sendAndSaveMessage({
+									type: 'toolResult',
+									data: {
+										content: resultContent,
+										isError: isError,
+										toolUseId: content.tool_use_id,
+										toolName: toolName,
+										hidden: true
+									}
+								});
+							} else {
+								// Show tool result and save to conversation
+								this._sendAndSaveMessage({
+									type: 'toolResult',
+									data: {
+										content: resultContent,
+										isError: isError,
+										toolUseId: content.tool_use_id,
+										toolName: toolName
+									}
+								});
+							}
 						}
 					}
 				}

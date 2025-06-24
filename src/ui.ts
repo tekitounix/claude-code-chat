@@ -722,6 +722,15 @@ const html = `<!DOCTYPE html>
 		}
 
 		function addToolResultMessage(data) {
+			// For Read and Edit tools with hidden flag, just hide loading state and show completion message
+			if (data.hidden && (data.toolName === 'Read' || data.toolName === 'Edit') && !data.isError) {				
+				// Show completion message
+				const toolName = data.toolName;
+				const completionText = toolName === 'Read' ? '✅ Read completed' : '✅ Edit completed';
+				addMessage(completionText, 'system');
+				return; // Don't show the result message
+			}
+
 			const messageDiv = document.createElement('div');
 			messageDiv.className = data.isError ? 'message error' : 'message tool-result';
 			
