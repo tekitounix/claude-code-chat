@@ -174,9 +174,10 @@ const styles = `
     }
 
     .message.user {
-        border: 1px solid rgba(100, 149, 237, 0.1);
+        border: 1px solid rgba(64, 165, 255, 0.2);
         border-radius: 8px;
         color: var(--vscode-editor-foreground);
+        font-family: var(--vscode-editor-font-family);
         position: relative;
         overflow: hidden;
     }
@@ -188,7 +189,7 @@ const styles = `
         top: 0;
         bottom: 0;
         width: 4px;
-        background: linear-gradient(180deg, #6495ed 0%, #4169e1 100%);
+        background: linear-gradient(180deg, #40a5ff 0%, #0078d4 100%);
     }
 
     .message.claude {
@@ -234,10 +235,9 @@ const styles = `
     }
 
     .message.tool {
-        border: 1px solid rgba(64, 165, 255, 0.2);
+        border: 1px solid rgba(120, 139, 237, 0.12);
         border-radius: 8px;
         color: var(--vscode-editor-foreground);
-        font-family: var(--vscode-editor-font-family);
         position: relative;
         overflow: hidden;
     }
@@ -249,7 +249,7 @@ const styles = `
         top: 0;
         bottom: 0;
         width: 4px;
-        background: linear-gradient(180deg, #40a5ff 0%, #0078d4 100%);
+        background: linear-gradient(180deg, #7c8bed 0%, #5d6fe1 100%);
     }
 
     .message.tool-result {
@@ -306,7 +306,7 @@ const styles = `
         width: 18px;
         height: 18px;
         border-radius: 4px;
-        background: linear-gradient(135deg, #40a5ff 0%, #0078d4 100%);
+        background: linear-gradient(135deg, #7c8bed 0%, #5d6fe1 100%);
         display: flex;
         align-items: center;
         justify-content: center;
@@ -314,6 +314,7 @@ const styles = `
         color: white;
         font-weight: 600;
         flex-shrink: 0;
+         margin-left: 4px;
     }
 
     .tool-info {
@@ -358,8 +359,8 @@ const styles = `
     }
 
     .message-icon {
-        width: 16px;
-        height: 16px;
+        width: 18px;
+        height: 18px;
         border-radius: 3px;
         display: flex;
         align-items: center;
@@ -372,7 +373,7 @@ const styles = `
     }
 
     .message-icon.user {
-        background: linear-gradient(135deg, #6495ed 0%, #4169e1 100%);
+        background: linear-gradient(135deg, #40a5ff 0%, #0078d4 100%);
     }
 
     .message-icon.claude {
