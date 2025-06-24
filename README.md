@@ -17,13 +17,10 @@ Ditch the command line and experience Claude Code like never before. This extens
 🖥️ **No Terminal Required** - Beautiful chat interface replaces command-line interactions  
 ⏪ **Restore Checkpoints** - Undo changes and restore code to any previous state  
 💾 **Conversation History** - Automatic conversation history and session management  
+🎨 **VS Code Native** - Claude Code integrated directly into VS Code with native theming  
 🧠 **Plan and Thinking modes** - Plan First and configurable Thinking modes for better results  
-⚡ **Instant Access** - Claude Code integrated directly into VS Code  
-🎨 **VS Code Native** - Seamlessly matches your editor's theme and design  
-📁 **Smart File Context** - Reference any file with simple @ mentions  
-🛑 **Full Control** - Start, stop, and manage AI processes with ease  
+⚡ **Smart File Context and Commands** - Reference any file with simple @ mentions and / for commands  
 🤖 **Model Selection** - Choose between Opus, Sonnet, or Default based on your needs  
-⚡ **Slash Commands** - Type "/" for instant access to all Claude Code commands  
 🐧 **WSL Support** - Full Windows Subsystem for Linux integration and compatibility
 
 ![Claude Code Chat Cut](https://github.com/user-attachments/assets/d4ded28f-a4ed-4862-9766-c1ff89947775)
