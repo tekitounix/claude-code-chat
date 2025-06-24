@@ -640,11 +640,13 @@ const html = `<!DOCTYPE html>
 					contentDiv.innerHTML = todoHtml;
 				} else {
 					// Format raw input with expandable content for long values
-					// Use diff format for Edit and MultiEdit tools, regular format for others
+					// Use diff format for Edit, MultiEdit, and Write tools, regular format for others
 					if (data.toolName === 'Edit') {
 						contentDiv.innerHTML = formatEditToolDiff(data.rawInput);
 					} else if (data.toolName === 'MultiEdit') {
 						contentDiv.innerHTML = formatMultiEditToolDiff(data.rawInput);
+					} else if (data.toolName === 'Write') {
+						contentDiv.innerHTML = formatWriteToolDiff(data.rawInput);
 					} else {
 						contentDiv.innerHTML = formatToolInputUI(data.rawInput);
 					}
@@ -1011,6 +1013,68 @@ const html = `<!DOCTYPE html>
 			}
 			
 			result += '</div>';
+			return result;
+		}
+
+		function formatWriteToolDiff(input) {
+			if (!input || typeof input !== 'object') {
+				return formatToolInputUI(input);
+			}
+
+			// Check if this is a Write tool (has file_path and content)
+			if (!input.file_path || !input.content) {
+				return formatToolInputUI(input);
+			}
+
+			// Format file path with better display
+			const formattedPath = formatFilePath(input.file_path);
+			let result = '<div class="diff-file-path" onclick="openFileInEditor(\\\'' + escapeHtml(input.file_path) + '\\\')">' + formattedPath + '</div>\\n';
+			
+			// Create diff view showing all content as additions
+			const contentLines = input.content.split('\\n');
+			
+			const maxLines = 6;
+			const shouldTruncate = contentLines.length > maxLines;
+			const visibleLines = shouldTruncate ? contentLines.slice(0, maxLines) : contentLines;
+			const hiddenLines = shouldTruncate ? contentLines.slice(maxLines) : [];
+			
+			result += '<div class="diff-container">';
+			result += '<div class="diff-header">New file content:</div>';
+			
+			// Create a unique ID for this diff
+			const diffId = 'write_' + Math.random().toString(36).substr(2, 9);
+			
+			// Show visible lines (all as additions)
+			result += '<div id="' + diffId + '_visible">';
+			for (const line of visibleLines) {
+				result += '<div class="diff-line added">+ ' + escapeHtml(line) + '</div>';
+			}
+			result += '</div>';
+			
+			// Show hidden lines (initially hidden)
+			if (shouldTruncate) {
+				result += '<div id="' + diffId + '_hidden" style="display: none;">';
+				for (const line of hiddenLines) {
+					result += '<div class="diff-line added">+ ' + escapeHtml(line) + '</div>';
+				}
+				result += '</div>';
+				
+				// Add expand button
+				result += '<div class="diff-expand-container">';
+				result += '<button class="diff-expand-btn" onclick="toggleDiffExpansion(\\\'' + diffId + '\\\')">Show ' + hiddenLines.length + ' more lines</button>';
+				result += '</div>';
+			}
+			
+			result += '</div>';
+			
+			// Add other properties if they exist
+			for (const [key, value] of Object.entries(input)) {
+				if (key !== 'file_path' && key !== 'content') {
+					const valueStr = typeof value === 'string' ? value : JSON.stringify(value, null, 2);
+					result += '\\n<strong>' + key + ':</strong> ' + valueStr;
+				}
+			}
+			
 			return result;
 		}
 
