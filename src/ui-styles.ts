@@ -314,7 +314,7 @@ const styles = `
         color: white;
         font-weight: 600;
         flex-shrink: 0;
-         margin-left: 4px;
+        margin-left: 6px;
     }
 
     .tool-info {
@@ -369,7 +369,7 @@ const styles = `
         color: white;
         font-weight: 600;
         flex-shrink: 0;
-        margin-left: 4px
+        margin-left: 6px;
     }
 
     .message-icon.user {
@@ -397,7 +397,7 @@ const styles = `
     }
 
     .message-content {
-        padding-left: 4px;
+        padding-left: 6px;
     }
 
     .priority-badge {
@@ -430,7 +430,7 @@ const styles = `
     }
 
     .tool-input {
-        padding: 12px;
+        padding: 6px;
         font-family: var(--vscode-editor-font-family);
         font-size: 12px;
         line-height: 1.4;
