@@ -729,6 +729,7 @@ const html = `<!DOCTYPE html>
 		function addToolResultMessage(data) {
 			// For Read and Edit tools with hidden flag, just hide loading state and show completion message
 			if (data.hidden && (data.toolName === 'Read' || data.toolName === 'Edit' || data.toolName === 'TodoWrite') && !data.isError) {				
+				return	
 				// Show completion message
 				const toolName = data.toolName;
 				let completionText;
@@ -737,7 +738,7 @@ const html = `<!DOCTYPE html>
 				} else if (toolName === 'Edit') {
 					completionText = '✅ Edit completed';
 				} else if (toolName === 'TodoWrite') {
-					return
+					completionText = '✅ Update Todos completed';
 				} else {
 					completionText = '✅ ' + toolName + ' completed';
 				}
