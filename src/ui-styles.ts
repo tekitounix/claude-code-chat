@@ -451,6 +451,90 @@ const styles = `
         opacity: 0.95;
     }
 
+    /* Diff display styles for Edit tool */
+    .diff-container {
+        margin-top: 8px;
+        border: 1px solid var(--vscode-panel-border);
+        border-radius: 4px;
+        overflow: hidden;
+    }
+
+    .diff-header {
+        background-color: var(--vscode-panel-background);
+        padding: 6px 12px;
+        font-size: 11px;
+        font-weight: 600;
+        color: var(--vscode-foreground);
+        border-bottom: 1px solid var(--vscode-panel-border);
+    }
+
+    .diff-removed,
+    .diff-added {
+        font-family: var(--vscode-editor-font-family);
+        font-size: 12px;
+        line-height: 1.4;
+    }
+
+    .diff-line {
+        padding: 2px 12px;
+        white-space: pre-wrap;
+        word-break: break-word;
+    }
+
+    .diff-line.removed {
+        background-color: rgba(244, 67, 54, 0.1);
+        border-left: 3px solid rgba(244, 67, 54, 0.6);
+        color: var(--vscode-foreground);
+    }
+
+    .diff-line.added {
+        background-color: rgba(76, 175, 80, 0.1);
+        border-left: 3px solid rgba(76, 175, 80, 0.6);
+        color: var(--vscode-foreground);
+    }
+
+    .diff-line.removed::before {
+        content: '';
+        color: rgba(244, 67, 54, 0.8);
+        font-weight: 600;
+        margin-right: 8px;
+    }
+
+    .diff-line.added::before {
+        content: '';
+        color: rgba(76, 175, 80, 0.8);
+        font-weight: 600;
+        margin-right: 8px;
+    }
+
+    .diff-expand-container {
+        padding: 8px 12px;
+        text-align: center;
+        border-top: 1px solid var(--vscode-panel-border);
+        background-color: var(--vscode-editor-background);
+    }
+
+    .diff-expand-btn {
+        background: linear-gradient(135deg, rgba(64, 165, 255, 0.15) 0%, rgba(64, 165, 255, 0.1) 100%);
+        border: 1px solid rgba(64, 165, 255, 0.3);
+        color: #40a5ff;
+        padding: 4px 12px;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 11px;
+        font-weight: 500;
+        transition: all 0.2s ease;
+    }
+
+    .diff-expand-btn:hover {
+        background: linear-gradient(135deg, rgba(64, 165, 255, 0.25) 0%, rgba(64, 165, 255, 0.15) 100%);
+        border-color: rgba(64, 165, 255, 0.5);
+    }
+
+    .diff-expand-btn:active {
+        transform: translateY(1px);
+    }
+
     .expand-btn {
         background: linear-gradient(135deg, rgba(64, 165, 255, 0.15) 0%, rgba(64, 165, 255, 0.1) 100%);
         border: 1px solid rgba(64, 165, 255, 0.3);

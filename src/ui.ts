@@ -635,7 +635,12 @@ const html = `<!DOCTYPE html>
 					contentDiv.innerHTML = todoHtml;
 				} else {
 					// Format raw input with expandable content for long values
-					contentDiv.innerHTML = formatToolInputUI(data.rawInput);
+					// Use diff format for Edit tool, regular format for others
+					if (data.toolName === 'Edit') {
+						contentDiv.innerHTML = formatEditToolDiff(data.rawInput);
+					} else {
+						contentDiv.innerHTML = formatToolInputUI(data.rawInput);
+					}
 				}
 				
 				inputElement.appendChild(contentDiv);
@@ -788,6 +793,95 @@ const html = `<!DOCTYPE html>
 				}
 			}
 			return result;
+		}
+
+		function formatEditToolDiff(input) {
+			if (!input || typeof input !== 'object') {
+				return formatToolInputUI(input);
+			}
+
+			// Check if this is an Edit tool (has file_path, old_string, new_string)
+			if (!input.file_path || !input.old_string || !input.new_string) {
+				return formatToolInputUI(input);
+			}
+
+			let result = '<strong>file_path:</strong> ' + input.file_path + '\\n\\n';
+			
+			// Create diff view
+			const oldLines = input.old_string.split('\\n');
+			const newLines = input.new_string.split('\\n');
+			const allLines = [...oldLines.map(line => ({type: 'removed', content: line})), 
+							 ...newLines.map(line => ({type: 'added', content: line}))];
+			
+			const maxLines = 6;
+			const shouldTruncate = allLines.length > maxLines;
+			const visibleLines = shouldTruncate ? allLines.slice(0, maxLines) : allLines;
+			const hiddenLines = shouldTruncate ? allLines.slice(maxLines) : [];
+			
+			result += '<div class="diff-container">';
+			result += '<div class="diff-header">Changes:</div>';
+			
+			// Create a unique ID for this diff
+			const diffId = 'diff_' + Math.random().toString(36).substr(2, 9);
+			
+			// Show visible lines
+			result += '<div id="' + diffId + '_visible">';
+			for (const line of visibleLines) {
+				const prefix = line.type === 'removed' ? '- ' : '+ ';
+				const cssClass = line.type === 'removed' ? 'removed' : 'added';
+				result += '<div class="diff-line ' + cssClass + '">' + prefix + escapeHtml(line.content) + '</div>';
+			}
+			result += '</div>';
+			
+			// Show hidden lines (initially hidden)
+			if (shouldTruncate) {
+				result += '<div id="' + diffId + '_hidden" style="display: none;">';
+				for (const line of hiddenLines) {
+					const prefix = line.type === 'removed' ? '- ' : '+ ';
+					const cssClass = line.type === 'removed' ? 'removed' : 'added';
+					result += '<div class="diff-line ' + cssClass + '">' + prefix + escapeHtml(line.content) + '</div>';
+				}
+				result += '</div>';
+				
+				// Add expand button
+				result += '<div class="diff-expand-container">';
+				result += '<button class="diff-expand-btn" onclick="toggleDiffExpansion(\\\'' + diffId + '\\\')">Show ' + hiddenLines.length + ' more lines</button>';
+				result += '</div>';
+			}
+			
+			result += '</div>';
+			
+			// Add other properties if they exist
+			for (const [key, value] of Object.entries(input)) {
+				if (key !== 'file_path' && key !== 'old_string' && key !== 'new_string') {
+					const valueStr = typeof value === 'string' ? value : JSON.stringify(value, null, 2);
+					result += '\\n<strong>' + key + ':</strong> ' + valueStr;
+				}
+			}
+			
+			return result;
+		}
+
+		function escapeHtml(text) {
+			const div = document.createElement('div');
+			div.textContent = text;
+			return div.innerHTML;
+		}
+
+		function toggleDiffExpansion(diffId) {
+			const hiddenDiv = document.getElementById(diffId + '_hidden');
+			const button = document.querySelector('[onclick*="' + diffId + '"]');
+			
+			if (hiddenDiv && button) {
+				if (hiddenDiv.style.display === 'none') {
+					hiddenDiv.style.display = 'block';
+					button.textContent = 'Show less';
+				} else {
+					hiddenDiv.style.display = 'none';
+					const hiddenLines = hiddenDiv.querySelectorAll('.diff-line').length;
+					button.textContent = 'Show ' + hiddenLines + ' more lines';
+				}
+			}
 		}
 
 		function sendMessage() {
