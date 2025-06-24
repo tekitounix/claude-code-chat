@@ -776,6 +776,12 @@ const html = `<!DOCTYPE html>
 				return str;
 			}
 
+			// Special handling for Read tool with file_path
+			if (input.file_path && Object.keys(input).length === 1) {
+				const formattedPath = formatFilePath(input.file_path);
+				return '<div class="diff-file-path">' + formattedPath + '</div>';
+			}
+
 			let result = '';
 			let isFirst = true;
 			for (const [key, value] of Object.entries(input)) {
@@ -784,7 +790,11 @@ const html = `<!DOCTYPE html>
 				if (!isFirst) result += '\\n';
 				isFirst = false;
 				
-				if (valueStr.length > 100) {
+				// Special formatting for file_path in Read tool context
+				if (key === 'file_path') {
+					const formattedPath = formatFilePath(valueStr);
+					result += '<div class="diff-file-path">' + formattedPath + '</div>';
+				} else if (valueStr.length > 100) {
 					const truncated = valueStr.substring(0, 97) + '...';
 					const escapedValue = valueStr.replace(/"/g, '&quot;').replace(/'/g, '&#39;');
 					result += '<strong>' + key + ':</strong> ' + truncated + ' <span class="expand-btn" data-key="' + key + '" data-value="' + escapedValue + '" onclick="toggleExpand(this)">expand</span>';
@@ -805,7 +815,9 @@ const html = `<!DOCTYPE html>
 				return formatToolInputUI(input);
 			}
 
-			let result = '<strong>file_path:</strong> ' + input.file_path + '\\n\\n';
+			// Format file path with better display
+			const formattedPath = formatFilePath(input.file_path);
+			let result = '<div class="diff-file-path">' + formattedPath + '</div>\\n';
 			
 			// Create diff view
 			const oldLines = input.old_string.split('\\n');
@@ -866,6 +878,24 @@ const html = `<!DOCTYPE html>
 			const div = document.createElement('div');
 			div.textContent = text;
 			return div.innerHTML;
+		}
+
+		function openFileInEditor(filePath) {
+			vscode.postMessage({
+				type: 'openFile',
+				filePath: filePath
+			});
+		}
+
+		function formatFilePath(filePath) {
+			if (!filePath) return '';
+			
+			// Extract just the filename
+			const parts = filePath.split('/');
+			const fileName = parts[parts.length - 1];
+			
+			return '<span class="file-path-truncated" title="' + escapeHtml(filePath) + '" onclick="openFileInEditor(\\\'' + escapeHtml(filePath) + '\\\')">' + 
+				   '<span class="file-icon">📄</span>' + escapeHtml(fileName) + '</span>';
 		}
 
 		function toggleDiffExpansion(diffId) {

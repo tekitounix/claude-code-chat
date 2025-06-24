@@ -429,7 +429,6 @@ const styles = `
     }
 
     .tool-input {
-        margin-top: 4px;
         padding: 12px;
         font-family: var(--vscode-editor-font-family);
         font-size: 12px;
@@ -453,7 +452,6 @@ const styles = `
 
     /* Diff display styles for Edit tool */
     .diff-container {
-        margin-top: 8px;
         border: 1px solid var(--vscode-panel-border);
         border-radius: 4px;
         overflow: hidden;
@@ -532,6 +530,50 @@ const styles = `
     }
 
     .diff-expand-btn:active {
+        transform: translateY(1px);
+    }
+
+    /* File path display styles */
+    .diff-file-path {
+        padding: 8px 12px;
+        border: 1px solid var(--vscode-panel-border);
+        border-radius: 4px;
+        font-size: 12px;
+    }
+
+    .file-path-short,
+    .file-path-truncated {
+        font-family: var(--vscode-editor-font-family);
+        color: var(--vscode-foreground);
+        font-weight: 500;
+    }
+
+    .file-path-truncated {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        padding: 2px 4px;
+        border-radius: 3px;
+    }
+
+    .file-path-truncated .file-icon {
+        font-size: 14px;
+        opacity: 0.7;
+        transition: opacity 0.2s ease;
+    }
+
+    .file-path-truncated:hover {
+        color: var(--vscode-textLink-foreground);
+        background-color: var(--vscode-list-hoverBackground);
+    }
+
+    .file-path-truncated:hover .file-icon {
+        opacity: 1;
+    }
+
+    .file-path-truncated:active {
         transform: translateY(1px);
     }
 

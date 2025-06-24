@@ -231,6 +231,9 @@ class ClaudeChatProvider {
 					case 'dismissWSLAlert':
 						this._dismissWSLAlert();
 						return;
+					case 'openFile':
+						this._openFileInEditor(message.filePath);
+						return;
 				}
 			},
 			null,
@@ -1369,6 +1372,17 @@ class ClaudeChatProvider {
 
 	private _dismissWSLAlert() {
 		this._context.globalState.update('wslAlertDismissed', true);
+	}
+
+	private async _openFileInEditor(filePath: string) {
+		try {
+			const uri = vscode.Uri.file(filePath);
+			const document = await vscode.workspace.openTextDocument(uri);
+			await vscode.window.showTextDocument(document, vscode.ViewColumn.One);
+		} catch (error) {
+			vscode.window.showErrorMessage(`Failed to open file: ${filePath}`);
+			console.error('Error opening file:', error);
+		}
 	}
 
 	public dispose() {
