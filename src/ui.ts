@@ -611,7 +611,12 @@ const html = `<!DOCTYPE html>
 			
 			const toolInfoElement = document.createElement('div');
 			toolInfoElement.className = 'tool-info';
-			toolInfoElement.textContent = data.toolInfo.replace('🔧 Executing: ', '');
+			let toolName = data.toolInfo.replace('🔧 Executing: ', '');
+			// Replace TodoWrite with more user-friendly name
+			if (toolName === 'TodoWrite') {
+				toolName = 'Update Todos';
+			}
+			toolInfoElement.textContent = toolName;
 			
 			headerDiv.appendChild(iconDiv);
 			headerDiv.appendChild(toolInfoElement);
@@ -723,10 +728,19 @@ const html = `<!DOCTYPE html>
 
 		function addToolResultMessage(data) {
 			// For Read and Edit tools with hidden flag, just hide loading state and show completion message
-			if (data.hidden && (data.toolName === 'Read' || data.toolName === 'Edit') && !data.isError) {				
+			if (data.hidden && (data.toolName === 'Read' || data.toolName === 'Edit' || data.toolName === 'TodoWrite') && !data.isError) {				
 				// Show completion message
 				const toolName = data.toolName;
-				const completionText = toolName === 'Read' ? '✅ Read completed' : '✅ Edit completed';
+				let completionText;
+				if (toolName === 'Read') {
+					completionText = '✅ Read completed';
+				} else if (toolName === 'Edit') {
+					completionText = '✅ Edit completed';
+				} else if (toolName === 'TodoWrite') {
+					return
+				} else {
+					completionText = '✅ ' + toolName + ' completed';
+				}
 				addMessage(completionText, 'system');
 				return; // Don't show the result message
 			}
@@ -1512,14 +1526,7 @@ const html = `<!DOCTYPE html>
 					break;
 					
 				case 'toolResult':
-					if (message.data.content.trim()) {
-						// Don't show result for TodoWrite tool (it's redundant with the tool execution display)
-						const isTodoWrite = message.data.content.includes('Todos have been modified successfully. Ensure that you continue to use the todo list to track your progress. Please proceed with the current tasks if applicable')
-						
-						if (!isTodoWrite) {
 							addToolResultMessage(message.data);
-						}
-					}
 					break;
 					
 				case 'thinking':
