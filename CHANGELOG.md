@@ -17,6 +17,13 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 - Visual separators between individual edits
 - Consistent styling with existing Edit tool diff display
 
+#### **Japanese IME Support**
+- Added support for Japanese, Chinese, and Korean input methods
+- Prevents message sending during IME kanji/character conversion
+- New "Use Ctrl/Cmd+Enter to send messages" option in settings
+- Automatically detects IME composition state (isComposing)
+- Dynamic send button tooltip updates based on selected mode
+
 #### **Enhanced Tool Result Management**
 - Added MultiEdit to hidden tool results list for cleaner interface
 - Tool results for Read, Edit, TodoWrite, and MultiEdit now show loading states instead of uninteresting success messages
