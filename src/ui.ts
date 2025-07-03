@@ -248,6 +248,17 @@ const html = `<!DOCTYPE html>
 					</div>
 				</div>
 
+				<h3 style="margin-top: 24px; margin-bottom: 16px; font-size: 14px; font-weight: 600;">Input Settings</h3>
+				<div class="settings-group">
+					<div class="tool-item">
+						<input type="checkbox" id="use-ctrl-enter" onchange="updateSettings()">
+						<label for="use-ctrl-enter">Use Ctrl/Cmd+Enter to send messages</label>
+						<p style="font-size: 11px; color: var(--vscode-descriptionForeground); margin: 4px 0 0 24px;">
+							Enable this if you use Japanese IME or other input methods that require Enter for conversion confirmation.
+						</p>
+					</div>
+				</div>
+
 				<h3 style="margin-top: 24px; margin-bottom: 16px; font-size: 14px; font-weight: 600;">MCP Configuration (coming soon)</h3>
 				<div>
 					<p style="font-size: 11px; color: var(--vscode-descriptionForeground); margin: 0;">
@@ -1143,6 +1154,16 @@ const html = `<!DOCTYPE html>
 				messageInput.value = '';
 			}
 		}
+		
+		function updateSendButtonTooltip() {
+			const sendBtn = document.getElementById('sendBtn');
+			const useCtrlEnter = document.getElementById('use-ctrl-enter')?.checked || false;
+			if (sendBtn) {
+				const isMac = navigator.platform.toUpperCase().indexOf('MAC') >= 0;
+				const shortcut = useCtrlEnter ? (isMac ? 'Cmd+Enter' : 'Ctrl+Enter') : 'Enter';
+				sendBtn.setAttribute('title', 'Send message (' + shortcut + ')');
+			}
+		}
 
 		function togglePlanMode() {
 			planModeEnabled = !planModeEnabled;
@@ -1263,9 +1284,28 @@ const html = `<!DOCTYPE html>
 		messageInput.addEventListener('input', adjustTextareaHeight);
 		
 		messageInput.addEventListener('keydown', (e) => {
-			if (e.key === 'Enter' && !e.shiftKey) {
-				e.preventDefault();
-				sendMessage();
+			// IME変換中の判定
+			if (e.isComposing || e.keyCode === 229) {
+				return; // IME変換中は何もしない
+			}
+			
+			// 設定に基づいて送信キーの判定
+			const useCtrlEnter = document.getElementById('use-ctrl-enter')?.checked || false;
+			
+			if (e.key === 'Enter') {
+				if (useCtrlEnter) {
+					// Ctrl/Cmd+Enterで送信
+					if (e.ctrlKey || e.metaKey) {
+						e.preventDefault();
+						sendMessage();
+					}
+				} else {
+					// 通常のEnterで送信（Shift+Enterは改行）
+					if (!e.shiftKey) {
+						e.preventDefault();
+						sendMessage();
+					}
+				}
 			} else if (e.key === '@' && !e.ctrlKey && !e.metaKey) {
 				// Don't prevent default, let @ be typed first
 				setTimeout(() => {
@@ -2283,9 +2323,13 @@ const html = `<!DOCTYPE html>
 			const wslDistro = document.getElementById('wsl-distro').value;
 			const wslNodePath = document.getElementById('wsl-node-path').value;
 			const wslClaudePath = document.getElementById('wsl-claude-path').value;
+			const useCtrlEnterToSend = document.getElementById('use-ctrl-enter').checked;
 
 			// Update WSL options visibility
 			document.getElementById('wslOptions').style.display = wslEnabled ? 'block' : 'none';
+			
+			// Update send button tooltip when setting changes
+			updateSendButtonTooltip();
 
 			// Send settings to VS Code immediately
 			vscode.postMessage({
@@ -2294,7 +2338,8 @@ const html = `<!DOCTYPE html>
 					'wsl.enabled': wslEnabled,
 					'wsl.distro': wslDistro || 'Ubuntu',
 					'wsl.nodePath': wslNodePath || '/usr/bin/node',
-					'wsl.claudePath': wslClaudePath || '/usr/local/bin/claude'
+					'wsl.claudePath': wslClaudePath || '/usr/local/bin/claude',
+					'input.useCtrlEnterToSend': useCtrlEnterToSend
 				}
 			});
 		}
@@ -2358,6 +2403,14 @@ const html = `<!DOCTYPE html>
 				
 				// Show/hide WSL options
 				document.getElementById('wslOptions').style.display = message.data['wsl.enabled'] ? 'block' : 'none';
+				
+				// Update Ctrl+Enter setting
+				const useCtrlEnter = message.data['input.useCtrlEnterToSend'] || false;
+				const ctrlEnterCheckbox = document.getElementById('use-ctrl-enter');
+				if (ctrlEnterCheckbox) {
+					ctrlEnterCheckbox.checked = useCtrlEnter;
+					updateSendButtonTooltip();
+				}
 			}
 
 			if (message.type === 'platformInfo') {

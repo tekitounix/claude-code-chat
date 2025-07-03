@@ -179,6 +179,11 @@
           ],
           "default": "think",
           "description": "Thinking mode intensity level. Higher levels provide more detailed reasoning but consume more tokens."
+        },
+        "claudeCodeChat.input.useCtrlEnterToSend": {
+          "type": "boolean",
+          "default": false,
+          "description": "Use Ctrl/Cmd+Enter to send messages (useful for Japanese IME users)"
         }
       }
     }

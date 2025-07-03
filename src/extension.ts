@@ -1244,7 +1244,8 @@ class ClaudeChatProvider {
 			'wsl.enabled': config.get<boolean>('wsl.enabled', false),
 			'wsl.distro': config.get<string>('wsl.distro', 'Ubuntu'),
 			'wsl.nodePath': config.get<string>('wsl.nodePath', '/usr/bin/node'),
-			'wsl.claudePath': config.get<string>('wsl.claudePath', '/usr/local/bin/claude')
+			'wsl.claudePath': config.get<string>('wsl.claudePath', '/usr/local/bin/claude'),
+			'input.useCtrlEnterToSend': config.get<boolean>('input.useCtrlEnterToSend', false)
 		};
 
 		this._panel?.webview.postMessage({
